@@ -45,5 +45,12 @@ const userSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
+userSchema.methods.matchPassword = async function (enteredPassword) {
+  if (!this.password) {
+    throw new Error("User does not have a password set");
+  }
+  return await bcrypt.compare(enteredPassword, this.password);
+};
+
 const User = mongoose.model("User", userSchema);
 module.exports = User;

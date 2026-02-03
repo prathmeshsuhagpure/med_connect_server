@@ -2,10 +2,30 @@ const User = require("../models/user_model");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 
-// ---------------- SIGNUP ----------------
-exports.signup = async (req, res) => {
+// Generate JWT token
+const generateToken = (id) => {
+  return jwt.sign({ id }, process.env.JWT_SECRET, {
+    expiresIn: "30d",
+  });
+};
+
+const signup = async (req, res) => {
   try {
-    const { name, email, password, role } = req.body;
+    const {
+      name,
+      email,
+      password,
+      confirmPassword,
+      role,
+      phoneNumber,
+      hospitalName,
+      registrationNumber,
+      address,
+    } = req.body;
+
+    if (password !== confirmPassword) {
+      return res.status(400).json({ message: "Passwords do not match" });
+    }
 
     const existingUser = await User.findOne({ email });
     if (existingUser) {
@@ -19,53 +39,96 @@ exports.signup = async (req, res) => {
       email,
       password: hashedPassword,
       role,
+      phoneNumber,
+      hospitalName,
+      registrationNumber,
+      address,
     });
+
+    const token = generateToken(user._id);
 
     res.status(201).json({
+      success: true,
       message: "Signup successful",
-      user: {
-        id: user._id,
-        name: user.name,
-        email: user.email,
-        role: user.role,
-      },
-    });
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
-};
-
-// ---------------- LOGIN ----------------
-exports.login = async (req, res) => {
-  try {
-    const { email, password, role } = req.body;
-
-    const user = await User.findOne({ email, role });
-    if (!user) {
-      return res.status(400).json({ message: "Invalid credentials" });
-    }
-
-    const isMatch = await bcrypt.compare(password, user.password);
-    if (!isMatch) {
-      return res.status(400).json({ message: "Invalid credentials" });
-    }
-
-    const token = jwt.sign(
-      { id: user._id, role: user.role },
-      process.env.JWT_SECRET,
-      { expiresIn: "7d" }
-    );
-
-    res.status(200).json({
       token,
       user: {
         id: user._id,
         name: user.name,
         email: user.email,
         role: user.role,
+        phoneNumber: user.phoneNumber,
+        hospitalName: user.hospitalName,
+        registrationNumber: user.registrationNumber,
+        address: user.address,
       },
     });
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    res.status(500).json({
+      success: false,
+      message: error.message
+    });
   }
 };
+
+const login = async (req, res) => {
+  try {
+    const { email, password, role } = req.body;
+
+    if (!email || !password) {
+      return res.status(400).json({
+        success: false,
+        message: "Please provide email and password",
+      });
+    }
+
+    const user = await User.findOne({ email, role }).select("+password");
+    if (!user) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid credentials"
+      });
+    }
+
+    const isPasswordMatch = await user.matchPassword(password);
+    if (!isPasswordMatch) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid credentials"
+      });
+    }
+
+    // Check role if specified
+    const requestedRole = User.role
+    if (user.role !== requestedRole) {
+      return res.status(403).json({
+        success: false,
+        message: `This account is registered as a ${user.role}, not a ${requestedRole}`,
+      });
+    }
+
+    const token = generateToken(user._id);
+
+    res.status(200).json({
+      success: true,
+      message: "Login successful",
+      token,
+      user: {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+        role: user.role,
+        phoneNumber: user.phoneNumber,
+        hospitalName: user.hospitalName,
+        registrationNumber: user.registrationNumber,
+        address: user.address,
+      },
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message
+    });
+  }
+};
+
+module.exports = {login, signup}; 

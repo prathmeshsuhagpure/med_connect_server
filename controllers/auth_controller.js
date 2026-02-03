@@ -97,9 +97,9 @@ const login = async (req, res) => {
       });
     }
 
-    // Check role if specified
-    const requestedRole = User.role
-    if (user.role !== requestedRole) {
+    // Check role if specified - FIXED: Changed from User.role to req.body.role
+    const requestedRole = req.body.role;
+    if (requestedRole && user.role !== requestedRole) {
       return res.status(403).json({
         success: false,
         message: `This account is registered as a ${user.role}, not a ${requestedRole}`,
@@ -131,4 +131,4 @@ const login = async (req, res) => {
   }
 };
 
-module.exports = {login, signup}; 
+module.exports = {login, signup};

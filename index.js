@@ -5,6 +5,7 @@ const cors = require("cors");
 const connectDB = require("./config/db");
 
 const authRoutes = require("./routes/auth_route");
+const userRoutes = require("./routes/user_routes");
 
 const app = express();
 
@@ -17,6 +18,7 @@ app.use(express.urlencoded({ extended: true }));
 connectDB();
 
 app.use('/api/auth', authRoutes);
+app.use('/api/user', userRoutes);
 
 // Start server const 
 PORT = process.env.PORT;

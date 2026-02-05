@@ -42,7 +42,7 @@ const userSchema = new mongoose.Schema(
       type: String,
       default: null,
     },
-    dob: { 
+    dateOfBirth: { 
       type: Date, 
       default: null, 
     }, 
@@ -56,6 +56,10 @@ const userSchema = new mongoose.Schema(
       enum: ["A+", "A-", "B+", "B-", "O+", "O-", "AB+", "AB-"], 
       default: null, 
     },
+    profilePicture: {
+      type: String, 
+      default: "", 
+    }
   },
   { timestamps: true }
 );

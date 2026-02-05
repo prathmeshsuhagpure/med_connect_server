@@ -52,12 +52,12 @@ const userSchema = new mongoose.Schema(
     gender: {
       type: String,
       enum: ["Male", "Female", "Other"],
-      default: "",
+      default: null,
     },
     bloodGroup: {
       type: String,
       enum: ["A+", "A-", "B+", "B-", "O+", "O-", "AB+", "AB-"],
-      default: "",
+      default: null,
     },
     profilePicture: {
       type: String,

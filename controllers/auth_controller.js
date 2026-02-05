@@ -2,7 +2,6 @@ const User = require("../models/user_model");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 
-// Generate JWT token
 const generateToken = (id) => {
   return jwt.sign({ id }, process.env.JWT_SECRET, {
     expiresIn: "30d",
@@ -132,4 +131,4 @@ const login = async (req, res) => {
   }
 };
 
-module.exports = {login, signup};
+module.exports = { login, signup };

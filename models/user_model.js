@@ -6,12 +6,14 @@ const userSchema = new mongoose.Schema(
     name: {
       type: String,
       required: true,
+      trim: true,
     },
     email: {
       type: String,
       required: true,
       unique: true,
       lowercase: true,
+      trim: true,
     },
     password: {
       type: String,
@@ -25,6 +27,7 @@ const userSchema = new mongoose.Schema(
       type: String,
       enum: ["patient", "hospital"],
       default: "patient",
+      required: true,
     },
     phoneNumber: {
       type: String,
@@ -42,24 +45,64 @@ const userSchema = new mongoose.Schema(
       type: String,
       default: null,
     },
-    dateOfBirth: { 
-      type: Date, 
-      default: null, 
-    }, 
-    gender: { 
-      type: String, 
-      enum: ["Male", "Female", "Other"], 
-      default: null, 
-    }, 
-    bloodGroup: { 
-      type: String, 
-      enum: ["A+", "A-", "B+", "B-", "O+", "O-", "AB+", "AB-"], 
-      default: null, 
+    dateOfBirth: {
+      type: Date,
+      default: null,
+    },
+    gender: {
+      type: String,
+      enum: ["Male", "Female", "Other"],
+      default: "",
+    },
+    bloodGroup: {
+      type: String,
+      enum: ["A+", "A-", "B+", "B-", "O+", "O-", "AB+", "AB-"],
+      default: "",
     },
     profilePicture: {
-      type: String, 
-      default: "", 
-    }
+      type: String,
+      default: "",
+    },
+    height: {
+      type: String,
+      default: '',
+    },
+    weight: {
+      type: String,
+      default: '',
+    },
+    emergencyContact: {
+      name: {
+        type: String,
+        default: '',
+      },
+      phone: {
+        type: String,
+        default: '',
+      },
+    },
+    medicalInfo: {
+      allergies: {
+        type: String,
+        default: '',
+      },
+      medications: {
+        type: String,
+        default: '',
+      },
+      conditions: {
+        type: String,
+        default: '',
+      },
+    },
+    isActive: {
+      type: Boolean,
+      default: true,
+    },
+    isVerified: {
+      type: Boolean,
+      default: false,
+    },
   },
   { timestamps: true }
 );

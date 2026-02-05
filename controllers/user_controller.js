@@ -78,7 +78,7 @@ const User = require('../models/user_model');
 
 const updateUserProfile = async (req, res) => {
     try {
-        const userId = req.userId; // From authMiddleware
+        const userId = req.user._id; // From authMiddleware
         const {
             name,
             email,

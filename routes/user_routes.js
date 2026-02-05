@@ -7,3 +7,5 @@ const { updateUserProfile } = require("../controllers/user_controller");
 
 // Upadte User Profile
 router.put('/update-profile', protect, updateUserProfile);
+
+module.exports = router;

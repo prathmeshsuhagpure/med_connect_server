@@ -120,7 +120,7 @@ const updateUserProfile = async (req, res) => {
 
         // Update basic fields
         if (name) user.name = name;
-        if (phoneNumber) user.phoneNumber = phone;
+        if (phoneNumber) user.phoneNumber = phoneNumber;
         if (dateOfBirth) user.dateOfBirth = dateOfBirth;
         if (gender) user.gender = gender;
         if (bloodGroup) user.bloodGroup = bloodGroup;
@@ -182,8 +182,8 @@ const updateUserProfile = async (req, res) => {
 
 const getUserProfile = async (req, res) => {
     try {
-        // req.userId is set by authMiddleware
-        const user = await User.findById(req.userId).select('-password');
+        const userId = req.user?._id || req.user?.id;
+        const user = await User.findById(userId).select('-password');
 
         if (!user) {
             return res.status(404).json({
@@ -199,8 +199,8 @@ const getUserProfile = async (req, res) => {
                 name: user.name,
                 email: user.email,
                 role: user.role,
-                phone: user.phoneNumber,
-                dob: user.dob,
+                phoneNumber: user.phoneNumber,
+                dateOfBirth: user.dateOfBirth,
                 gender: user.gender,
                 bloodGroup: user.bloodGroup,
                 height: user.height,
@@ -225,9 +225,8 @@ const getUserProfile = async (req, res) => {
 
 const deleteUserAccount = async (req, res) => {
     try {
-        const userId = req.userId;
+        const userId = req.user._id;
 
-        // Find and delete user
         const user = await User.findByIdAndDelete(userId);
 
         if (!user) {

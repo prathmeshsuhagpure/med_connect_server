@@ -292,6 +292,13 @@ const userSchema = new mongoose.Schema(
 userSchema.index({ role: 1 });
 userSchema.index({ isActive: 1 });
 
+userSchema.pre('save', async function (next) {
+  if (!this.isModified('password')) return next();
+  this.password = await bcrypt.hash(this.password, 10);
+  next();
+});
+
+
 userSchema.methods.matchPassword = async function (enteredPassword) {
   if (!this.password) {
     throw new Error("User does not have a password set");

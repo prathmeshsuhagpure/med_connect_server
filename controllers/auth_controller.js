@@ -453,7 +453,7 @@ const verifyToken = async (req, res) => {
     }
 
     // Find user
-    const user = await User.findById(decoded.userId).select('-password');
+    const user = await User.findById(decoded.id).select('-password');
 
     if (!user) {
       return res.status(401).json({

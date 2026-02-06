@@ -7,7 +7,8 @@ const {protect} =require("../middlewares/auth_middleware");
 // Auth Routes
 router.post("/signup", signup);
 router.post("/login", login);
-router.post('/verify-token', protect, verifyToken);
+router.post('/verify-token', verifyToken);
+
 router.post('/logout', protect, logout);
 
 module.exports = router;

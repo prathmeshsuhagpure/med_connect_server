@@ -1,80 +1,4 @@
-const User = require('../models/user_model');
-
-/* const updateUserProfile = async (req, res) => {
-    try {
-        const userId = req.user.id || req.user._id;
-        const user = await User.findById(userId);
-
-        if (!user) {
-            return res.status(404).json({
-                success: false,
-                message: "User not found",
-            });
-        }
-
-        // Validate email format if provided
-        if (req.body.email) {
-            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-            if (!emailRegex.test(req.body.email)) {
-                return res.status(400).json({
-                    success: false,
-                    message: "Invalid email format",
-                });
-            }
-
-            // Check if email already exists for another user
-            const existingUser = await User.findOne({
-                email: req.body.email,
-                _id: { $ne: userId },
-            });
-            if (existingUser) {
-                return res.status(400).json({
-                    success: false,
-                    message: "Email already exists",
-                });
-            }
-        }
-
-        // Validate phone number if provided
-        if (req.body.phoneNumber) {
-            const phoneRegex = /^[+]?[1-9][\d\s\-\(\)]{7,15}$/;
-            if (!phoneRegex.test(req.body.phoneNumber)) {
-                return res.status(400).json({
-                    success: false,
-                    message: "Invalid phone number format",
-                });
-            }
-        }
-
-        // Update allowed fields only if provided
-        if (req.body.name) user.name = req.body.name;
-        if (req.body.email) user.email = req.body.email;
-        if (req.body.phoneNumber) user.phoneNumber = req.body.phoneNumber;
-        if (req.body.dateOfBirth) user.dateOfBirth = req.body.dateOfBirth;
-        if (req.body.gender) user.gender = req.body.gender;
-        if (req.body.profilePicture) user.profilePicture = req.body.profilePicture;
-        if (req.body.address) user.address = req.body.address;
-        if (req.body.bloodGroup) user.bloodGroup = req.body.bloodGroup;
-        if (req.body.height) user.height = req.body.height;
-        if (req.body.weight) user.weight = req.body.weight;
-        if (req.body.emergencyContactName) user.emergencyContactName = req.body.emergencyContactName;
-        if (req.body.emergencyContactNumber) user.emergencyContactNumber = req.body.emergencyContactNumber;
-
-        const updatedUser = await user.save();
-
-        res.status(200).json({
-            success: true,
-            message: "Profile updated successfully",
-        });
-    }
-    catch (err) {
-        console.error("Update profile error:", err);
-        res.status(500).json({
-            success: false,
-            message: "Server error occurred while updating profile",
-        });
-    }
-} */
+/* const User = require('../models/user_model');
 
 const updateUserProfile = async (req, res) => {
     try {
@@ -249,6 +173,248 @@ const deleteUserAccount = async (req, res) => {
     }
 };
 
+module.exports = { updateUserProfile, getUserProfile, deleteUserAccount, };
+ */
 
+const User = require('../models/user_model');
+
+const updateUserProfile = async (req, res) => {
+    try {
+        const userId = req.user._id;
+        const updates = req.body;
+
+        // Find user
+        const user = await User.findById(userId);
+
+        if (!user) {
+            return res.status(404).json({
+                success: false,
+                message: 'User not found'
+            });
+        }
+
+        // Check if email is being changed and if it's already taken
+        if (email && email !== user.email) {
+            const emailExists = await User.findOne({ email, _id: { $ne: userId } });
+            if (emailExists) {
+                return res.status(400).json({
+                    success: false,
+                    message: 'Email already in use'
+                });
+            }
+            user.email = email;
+        }
+
+        const commonFields = ['name', 'email', 'address'];
+        commonFields.forEach(field => {
+            if (updates[field] !== undefined) {
+                user[field] = updates[field] || null;
+            }
+        });
+
+        if (updates.phone !== undefined) {
+            user.phoneNumber = updates.phone || null;
+        }
+
+        switch (user.role) {
+            case 'patient':
+                updatePatientFields(user, updates);
+                break;
+
+            case 'hospital':
+                updateHospitalFields(user, updates);
+                break;
+
+            case 'doctor':
+                updateDoctorFields(user, updates);
+                break;
+        }
+
+        // Save updated user
+        await user.save();
+
+        return res.status(200).json({
+            success: true,
+            message: 'Profile updated successfully',
+            user: user.getRoleData(),
+        });
+
+    } catch (error) {
+        console.error('Update profile error:', error);
+
+        // Handle validation errors
+        if (error.name === 'ValidationError') {
+            const messages = Object.values(error.errors).map(err => err.message);
+            return res.status(400).json({
+                success: false,
+                message: messages.join(', ')
+            });
+        }
+
+        return res.status(500).json({
+            success: false,
+            message: 'Error updating profile'
+        });
+    }
+};
+
+const getUserProfile = async (req, res) => {
+    try {
+        const userId = req.user?._id || req.user?.id;
+        const user = await User.findById(userId).select('-password');
+
+        if (!user) {
+            return res.status(404).json({
+                success: false,
+                message: 'User not found'
+            });
+        }
+
+        return res.status(200).json({
+            success: true,
+            user: user.getRoleData()
+        });
+    } catch (error) {
+        console.error('Get profile error:', error);
+        return res.status(500).json({
+            success: false,
+            message: 'Error fetching profile'
+        });
+    }
+};
+
+const updatePatientFields = (user, updates) => {
+    // Personal information
+    if (updates.dob !== undefined) {
+        user.dateOfBirth = updates.dob || null;
+    }
+
+    if (updates.gender !== undefined) {
+        user.gender = updates.gender && updates.gender.trim() !== '' ? updates.gender : null;
+    }
+
+    if (updates.bloodGroup !== undefined) {
+        user.bloodGroup = updates.bloodGroup && updates.bloodGroup.trim() !== '' ? updates.bloodGroup : null;
+    }
+
+    if (updates.height !== undefined) {
+        user.height = updates.height || null;
+    }
+
+    if (updates.weight !== undefined) {
+        user.weight = updates.weight || null;
+    }
+
+    // Emergency contact
+    if (updates.emergencyName !== undefined || updates.emergencyContact !== undefined) {
+        if (!user.emergencyContact) {
+            user.emergencyContact = {};
+        }
+        if (updates.emergencyName !== undefined) {
+            user.emergencyContact.name = updates.emergencyName || null;
+        }
+        if (updates.emergencyContact !== undefined) {
+            user.emergencyContact.phone = updates.emergencyContact || null;
+        }
+    }
+
+    // Medical information
+    if (updates.allergies !== undefined || updates.medications !== undefined || updates.conditions !== undefined) {
+        if (!user.medicalInfo) {
+            user.medicalInfo = {};
+        }
+        if (updates.allergies !== undefined) {
+            user.medicalInfo.allergies = updates.allergies || null;
+        }
+        if (updates.medications !== undefined) {
+            user.medicalInfo.medications = updates.medications || null;
+        }
+        if (updates.conditions !== undefined) {
+            user.medicalInfo.conditions = updates.conditions || null;
+        }
+    }
+};
+
+const updateHospitalFields = (user, updates) => {
+    const hospitalFields = [
+        'hospitalName',
+        'registrationNumber',
+        'licenseNumber',
+        'specialties',
+        'facilities',
+        'operatingHours'
+    ];
+
+    hospitalFields.forEach(field => {
+        if (updates[field] !== undefined) {
+            user[field] = updates[field] || null;
+        }
+    });
+};
+
+const updateDoctorFields = (user, updates) => {
+    const doctorFields = [
+        'specialization',
+        'qualification',
+        'licenseNumber',
+        'experience',
+        'hospitalAffiliation',
+        'consultationFee',
+        'availableHours'
+    ];
+
+    doctorFields.forEach(field => {
+        if (updates[field] !== undefined) {
+            user[field] = updates[field] || null;
+        }
+    });
+};
+
+const deleteUserAccount = async (req, res) => {
+    try {
+        const userId = req.userId;
+        const { password } = req.body;
+
+        // Find user
+        const user = await User.findById(userId);
+
+        if (!user) {
+            return res.status(404).json({
+                success: false,
+                message: 'User not found'
+            });
+        }
+
+        // Verify password before deletion
+        if (password) {
+            const isPasswordValid = await user.comparePassword(password);
+            if (!isPasswordValid) {
+                return res.status(401).json({
+                    success: false,
+                    message: 'Invalid password'
+                });
+            }
+        }
+
+        // Soft delete (set isActive to false)
+        user.isActive = false;
+        await user.save();
+
+        // Or hard delete
+        // await User.findByIdAndDelete(userId);
+
+        return res.status(200).json({
+            success: true,
+            message: 'Account deleted successfully'
+        });
+
+    } catch (error) {
+        console.error('Delete account error:', error);
+        return res.status(500).json({
+            success: false,
+            message: 'Error deleting account'
+        });
+    }
+};
 
 module.exports = { updateUserProfile, getUserProfile, deleteUserAccount, };

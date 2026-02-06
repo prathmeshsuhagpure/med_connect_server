@@ -5,7 +5,9 @@ const userSchema = new mongoose.Schema(
   {
     name: {
       type: String,
-      required: true,
+      required: function () {
+        return this.role === "patient";
+      },
       trim: true,
     },
     email: {
@@ -36,6 +38,9 @@ const userSchema = new mongoose.Schema(
     hospitalName: {
       type: String,
       default: null,
+      required: function () {
+        return this.role === "hospital";
+      },
     },
     registrationNumber: {
       type: String,

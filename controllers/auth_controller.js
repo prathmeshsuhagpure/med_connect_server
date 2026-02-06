@@ -378,7 +378,7 @@ const login = async (req, res) => {
       });
     }
 
-    const user = await User.findOne({ email }).select('+password');
+    const user = await User.findOne({ email, role }).select('+password');
     if (!user) {
       return res.status(400).json({
         success: false,

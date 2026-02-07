@@ -6,6 +6,7 @@ const connectDB = require("./config/db");
 
 const authRoutes = require("./routes/auth_routes");
 const userRoutes = require("./routes/user_routes");
+const uploadRoutes = require("./routes/upload_routes");
 
 const app = express();
 
@@ -19,6 +20,7 @@ connectDB();
 
 app.use('/api/auth', authRoutes);
 app.use('/api/user', userRoutes);
+app.use('/api/user', uploadRoutes);
 
 // Start server const 
 PORT = process.env.PORT;

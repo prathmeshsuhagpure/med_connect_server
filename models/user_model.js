@@ -320,7 +320,7 @@ userSchema.methods.getRoleData = function () {
     role: this.role,
     phoneNumber: this.phoneNumber,
     address: this.address,
-    profileImage: this.profileImage,
+    profilePicture: this.profilePicture,
     isVerified: this.isVerified,
     createdAt: this.createdAt,
     updatedAt: this.updatedAt,

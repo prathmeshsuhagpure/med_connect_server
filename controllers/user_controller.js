@@ -182,6 +182,7 @@ const updateUserProfile = async (req, res) => {
     try {
         const userId = req.user._id;
         const updates = req.body;
+        const { email } = req.body;
 
         // Find user
         const user = await User.findById(userId);
@@ -205,7 +206,7 @@ const updateUserProfile = async (req, res) => {
             user.email = email;
         }
 
-        const commonFields = ['name', 'email', 'address'];
+        const commonFields = ['name', 'address'];
         commonFields.forEach(field => {
             if (updates[field] !== undefined) {
                 user[field] = updates[field] || null;

@@ -113,7 +113,7 @@ hospitalSchema.add({
   },
 
   facilities: {
-    type: [String], 
+    type: [String],
     default: [],
   },
 
@@ -123,9 +123,9 @@ hospitalSchema.add({
   },
 
   operatingHours: {
-    type: [String],
-    default: [],
-  },
+    type: mongoose.Schema.Types.Mixed,
+    default: null,
+  }
 
   // ---------------- Media ----------------
   logo: {
@@ -221,7 +221,7 @@ hospitalSchema.add({
 
   // ---------------- Search Helpers ----------------
   distance: {
-    type: Number, 
+    type: Number,
     default: null,
   },
 });

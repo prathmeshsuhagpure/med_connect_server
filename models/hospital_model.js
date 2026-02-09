@@ -112,19 +112,19 @@ hospitalSchema.add({
     default: null,
   },
 
-  specialties: {
-    type: String, // can convert to [String] later
-    default: null,
-  },
-
   facilities: {
-    type: [String], // ✅ FIXED
+    type: [String], 
     default: [],
   },
 
+  departments: {
+    type: [String],
+    default: []
+  },
+
   operatingHours: {
-    type: String,
-    default: null,
+    type: [String],
+    default: [],
   },
 
   // ---------------- Media ----------------
@@ -202,7 +202,7 @@ hospitalSchema.add({
   },
 
   type: {
-    type: String, // Govt / Private / Trust / Clinic
+    type: String,
     default: null,
   },
 
@@ -221,7 +221,7 @@ hospitalSchema.add({
 
   // ---------------- Search Helpers ----------------
   distance: {
-    type: Number, // computed at runtime, not stored usually
+    type: Number, 
     default: null,
   },
 });
@@ -243,7 +243,6 @@ hospitalSchema.methods.getRoleData = function () {
     registrationNumber: this.registrationNumber,
     licenseNumber: this.licenseNumber,
     description: this.description,
-    specialties: this.specialties,
     facilities: this.facilities,
     operatingHours: this.operatingHours,
     logo: this.logo,
@@ -262,6 +261,7 @@ hospitalSchema.methods.getRoleData = function () {
     is24x7: this.is24x7,
     rating: this.rating,
     totalReviews: this.totalReviews,
+    departments: this.departments,
   };
 };
 

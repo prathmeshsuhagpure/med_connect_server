@@ -227,11 +227,10 @@ hospitalSchema.add({
 });
 
 // ---------------- Hooks ----------------
-hospitalSchema.pre("validate", function (next) {
+hospitalSchema.pre("validate", function () {
   if (!this.role) {
     this.role = "hospital";
   }
-  next();
 });
 
 // ---------------- Instance Methods ----------------

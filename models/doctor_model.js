@@ -46,11 +46,10 @@ doctorSchema.add({
 });
 
 // Set default role for doctors
-doctorSchema.pre('validate', function(next) {
+doctorSchema.pre('validate', async function() {
   if (!this.role) {
     this.role = 'doctor';
   }
-  next();
 });
 
 // Method to get doctor-specific data

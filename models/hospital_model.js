@@ -42,11 +42,10 @@ hospitalSchema.add({
 });
 
 // Set default role for hospitals
-hospitalSchema.pre('validate', function(next) {
+hospitalSchema.pre('validate', async function() {
   if (!this.role) {
     this.role = 'hospital';
   }
-  next();
 });
 
 // Method to get hospital-specific data

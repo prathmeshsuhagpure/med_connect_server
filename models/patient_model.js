@@ -54,11 +54,10 @@ patientSchema.add({
 });
 
 // Set default role for patients
-patientSchema.pre('validate', function(next) {
+patientSchema.pre('validate', async function () {
   if (!this.role) {
     this.role = 'patient';
   }
-  next();
 });
 
 // Method to get patient-specific data

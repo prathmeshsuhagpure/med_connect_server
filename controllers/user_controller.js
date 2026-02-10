@@ -427,11 +427,12 @@ const updateHospitalFields = (user, updates) => {
     'bedCount',
     'icuBedCount',
     'emergencyBedCount',
-    'logo',
     'coverPhoto',
     'emergencyPhoneNumber',
     'website',
-    'isVerified'
+    'isVerified',
+    'hospitalImages',
+    'accreditations',
   ];
 
   hospitalFields.forEach(field => {

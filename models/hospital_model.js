@@ -125,9 +125,8 @@ hospitalSchema.add({
   operatingHours: {
     type: mongoose.Schema.Types.Mixed,
     default: null,
-  }
+  },
 
-  // ---------------- Media ----------------
   logo: {
     type: String,
     default: null,

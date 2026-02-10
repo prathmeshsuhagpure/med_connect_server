@@ -421,16 +421,17 @@ const updateHospitalFields = (user, updates) => {
     'hasEmergency',
     'is24x7',
     'isOpen',
-    'logo',
-    'coverPhoto',
-    'emergencyPhoneNumber',
-    'website',
     'city',
     'state',
     'zip',
     'bedCount',
     'icuBedCount',
     'emergencyBedCount',
+    'logo',
+    'coverPhoto',
+    'emergencyPhoneNumber',
+    'website',
+    'isVerified'
   ];
 
   hospitalFields.forEach(field => {

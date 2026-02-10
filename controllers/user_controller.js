@@ -414,7 +414,23 @@ const updateHospitalFields = (user, updates) => {
     'licenseNumber',
     'specialties',
     'facilities',
-    'operatingHours'
+    'operatingHours',
+    'description',
+    'departments',
+    'type',
+    'hasEmergency',
+    'is24x7',
+    'isOpen',
+    'logo',
+    'coverPhoto',
+    'emergencyPhoneNumber',
+    'website',
+    'city',
+    'state',
+    'zip',
+    'bedCount',
+    'icuBedCount',
+    'emergencyBedCount',
   ];
 
   hospitalFields.forEach(field => {

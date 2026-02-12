@@ -48,6 +48,14 @@ doctorSchema.add({
     type: Number,
     default: 0,
   },
+  department: {
+    type: String,
+    required: true,
+  },
+  isAvailable: {
+    type: Boolean,
+    default: false,
+  },
 });
 
 // Set default role for doctors
@@ -71,6 +79,8 @@ doctorSchema.methods.getRoleData = function () {
     availableHours: this.availableHours,
     rating: this.rating,
     totalReviews: this.totalReviews,
+    department: this.department,
+    isAvailable: this.isAvailable,
   };
 };
 

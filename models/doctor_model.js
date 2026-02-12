@@ -25,6 +25,11 @@ doctorSchema.add({
     type: String,
     default: null,
   },
+  hospitalId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Hospital",
+    required: true,
+  },
   consultationFee: {
     type: String,
     default: null,
@@ -46,7 +51,7 @@ doctorSchema.add({
 });
 
 // Set default role for doctors
-doctorSchema.pre('validate', async function() {
+doctorSchema.pre('validate', async function () {
   if (!this.role) {
     this.role = 'doctor';
   }
@@ -70,11 +75,11 @@ doctorSchema.methods.getRoleData = function () {
 };
 
 // Helper methods
-doctorSchema.methods.getVerificationStatus = function() {
+doctorSchema.methods.getVerificationStatus = function () {
   return this.isVerified ? 'Verified' : 'Pending Verification';
 };
 
-doctorSchema.methods.getDisplayName = function() {
+doctorSchema.methods.getDisplayName = function () {
   return `Dr. ${this.name}`;
 };
 

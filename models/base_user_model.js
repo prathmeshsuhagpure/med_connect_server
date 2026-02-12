@@ -19,12 +19,13 @@ const createBaseUserSchema = () => {
       },
       password: {
         type: String,
-        required: true,
+        required: false,
+        default: null
       },
       role: {
         type: String,
         required: true,
-        immutable: true, // Role cannot be changed after creation
+        immutable: true, 
       },
       phoneNumber: {
         type: String,
@@ -51,7 +52,7 @@ const createBaseUserSchema = () => {
         default: false,
       },
     },
-    { 
+    {
       timestamps: true,
     }
   );

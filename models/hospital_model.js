@@ -39,110 +39,121 @@ hospitalSchema.add({
   },
 
   operatingHours: {
-    type: mongoose.Schema.Types.Mixed,
-    default: null,
-  },
+    type: Map,
+    of: {
+      isOpen: Boolean,
+      start: String,
+      end: String,
+    },
 
-  coverPhoto: {
-    type: String,
-    default: null,
-  },
+    coverPhoto: {
+      type: String,
+      default: null,
+    },
 
-  // ---------------- Contact & Location ----------------
-  emergencyPhoneNumber: {
-    type: String,
-    default: null,
-  },
+    // ---------------- Contact & Location ----------------
+    emergencyPhoneNumber: {
+      type: String,
+      default: null,
+    },
 
-  website: {
-    type: String,
-    default: null,
-  },
+    website: {
+      type: String,
+      default: null,
+    },
 
-  city: {
-    type: String,
-    default: null,
-    index: true,
-  },
+    city: {
+      type: String,
+      default: null,
+      index: true,
+    },
 
-  state: {
-    type: String,
-    default: null,
-    index: true,
-  },
+    state: {
+      type: String,
+      default: null,
+      index: true,
+    },
 
-  zip: {
-    type: String,
-    default: null,
-  },
+    zip: {
+      type: String,
+      default: null,
+    },
 
-  // ---------------- Capacity ----------------
-  bedCount: {
-    type: Number,
-    default: null,
-    min: 0,
-  },
+    // ---------------- Capacity ----------------
+    bedCount: {
+      type: Number,
+      default: null,
+      min: 0,
+    },
 
-  icuBedCount: {
-    type: Number,
-    default: null,
-    min: 0,
-  },
+    icuBedCount: {
+      type: Number,
+      default: null,
+      min: 0,
+    },
 
-  emergencyBedCount: {
-    type: Number,
-    default: null,
-    min: 0,
-  },
+    emergencyBedCount: {
+      type: Number,
+      default: null,
+      min: 0,
+    },
 
-  // ---------------- Status ----------------
-  isOpen: {
-    type: Boolean,
-    default: false,
-  },
+    // ---------------- Status ----------------
+    isOpen: {
+      type: Boolean,
+      default: false,
+    },
 
-  hasEmergency: {
-    type: Boolean,
-    default: false,
-  },
+    hasEmergency: {
+      type: Boolean,
+      default: false,
+    },
 
-  is24x7: {
-    type: Boolean,
-    default: false,
-  },
+    is24x7: {
+      type: Boolean,
+      default: false,
+    },
 
-  type: {
-    type: String,
-    default: null,
-  },
+    type: {
+      type: String,
+      default: null,
+    },
 
-  // ---------------- Reviews ----------------
-  rating: {
-    type: Number,
-    min: 0,
-    max: 5,
-    default: null,
-  },
+    // ---------------- Reviews ----------------
+    rating: {
+      type: Number,
+      min: 0,
+      max: 5,
+      default: null,
+    },
 
-  totalReviews: {
-    type: Number,
-    default: 0,
-  },
+    totalReviews: {
+      type: Number,
+      default: 0,
+    },
 
-  accreditations: {
-    type: [String],
-    default: [],
-  },
+    accreditations: [
+      {
+        type: String,
+      },
+    ],
 
-  hospitalImages: {
-    type: [String],
-    default: [],
-  },
+    hospitalImages: [
+      {
+        type: String,
+      },
+    ],
 
-  // ---------------- Search Helpers ----------------
-  distance: {
-    type: Number,
-    default: null,
+    ambulanceService: {
+      type: Boolean,
+      default: false,
+    },
+
+    // ---------------- Search Helpers ----------------
+    distance: {
+      type: Number,
+      default: null,
+    },
   },
 });
 
@@ -183,6 +194,7 @@ hospitalSchema.methods.getRoleData = function () {
     departments: this.departments,
     accreditations: this.accreditations,
     hospitalImages: this.hospitalImages,
+    ambulanceService: this.ambulanceService,
   };
 };
 

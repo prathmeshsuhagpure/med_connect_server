@@ -8,6 +8,7 @@ const authRoutes = require("./routes/auth_routes");
 const userRoutes = require("./routes/user_routes");
 const uploadRoutes = require("./routes/upload_routes");
 const doctorRoutes = require("./routes/doctor_routes");
+const hospitalRoutes = require("./routes/hospital_routes");
 
 const app = express();
 
@@ -23,6 +24,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/user', userRoutes);
 app.use('/api/user', uploadRoutes);
 app.use("/api/doctor", doctorRoutes );
+app.use("/api/hospital", hospitalRoutes);
 
 // Start server const 
 PORT = process.env.PORT;

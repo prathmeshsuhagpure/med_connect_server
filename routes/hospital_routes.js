@@ -23,13 +23,13 @@ router.get('/:id', getHospitalById);
 router.get('/:hospitalId/doctors', getDoctorsByHospital);
 
 // CREATE
-router.post("/", protect, createHospital);
+router.post("/addHospital", protect, createHospital);
 
 // UPDATE
-router.put("/:id", protect, updateHospital);
+router.put("/updateHospital/:id", protect, updateHospital);
 
 // DELETE
-router.delete("/:id", protect, deleteHospital);
+router.delete("/deleteHospital/:id", protect, deleteHospital);
 
 // TOGGLE STATUS
 router.patch("/:id/toggle-status", protect, toggleHospitalStatus);

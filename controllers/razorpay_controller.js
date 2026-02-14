@@ -1,6 +1,8 @@
 const Razorpay = require('razorpay');
 const crypto = require('crypto');
 const Payment = require('../models/payment_model');
+const Appointment = require('../models/appointment_model');
+
 
 const getRazorpayInstance = () => {
     if (!process.env.RAZORPAY_KEY_ID || !process.env.RAZORPAY_KEY_SECRET) {

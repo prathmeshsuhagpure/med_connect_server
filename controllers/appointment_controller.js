@@ -2,8 +2,6 @@ const Appointment = require("../models/appointment_model");
 
 const createAppointment = async (req, res) => {
   try {
-    console.log("Incoming body:", req.body); // 👈 log request
-
     const appointment = new Appointment(req.body);
     await appointment.save();
 
@@ -13,8 +11,6 @@ const createAppointment = async (req, res) => {
       data: appointment,
     });
   } catch (error) {
-    console.error("CREATE APPOINTMENT ERROR:", error); // 👈 VERY IMPORTANT
-
     res.status(400).json({
       success: false,
       message: "Failed to create appointment",

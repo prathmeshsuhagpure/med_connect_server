@@ -6,7 +6,7 @@ const {
   getPaymentHistory,
   getPaymentById,
   refundPayment
-} = require('../controllers/payment_controller');
+} = require('../controllers/razorpay_controller');
 const { protect } = require('../middlewares/auth_middleware');
 
 // All routes require authentication

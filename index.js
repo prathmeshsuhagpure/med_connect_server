@@ -10,6 +10,7 @@ const uploadRoutes = require("./routes/upload_routes");
 const doctorRoutes = require("./routes/doctor_routes");
 const hospitalRoutes = require("./routes/hospital_routes");
 const appointmentRoutes = require("./routes/appointment_routes");
+const razorpayPaymentRoutes = require("./routes/razorpay_payment_routes");
 
 const app = express();
 
@@ -27,6 +28,7 @@ app.use('/api/user', uploadRoutes);
 app.use("/api/doctor", doctorRoutes );
 app.use("/api/hospital", hospitalRoutes);
 app.use("/api/appointment", appointmentRoutes);
+app.use("/api/payment", razorpayPaymentRoutes);
 
 // Start server const 
 PORT = process.env.PORT;

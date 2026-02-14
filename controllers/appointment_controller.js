@@ -191,12 +191,42 @@ const rescheduleAppointment = async (req, res) => {
   }
 };
 
+const getPatientAppointments = async (req, res) => {
+  try {
+    const { patientId } = req.params;
+
+    const appointments = await Appointment.find({ patientId })
+      .sort({ appointmentDate: 1 });
+
+    if (!appointments.length) {
+      return res.status(404).json({
+        success: false,
+        message: "No appointments found for this patient",
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      count: appointments.length,
+      data: appointments,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "Failed to fetch patient appointments",
+      error: error.message,
+    });
+  }
+};
+
+
 module.exports = {
-    createAppointment, 
-    getAllAppointments, 
-    getAppointmentById, 
-    cancelAppointment, 
-    deleteAppointment, 
-    rescheduleAppointment, 
-    updateAppointment
+  createAppointment,
+  getAllAppointments,
+  getAppointmentById,
+  cancelAppointment,
+  deleteAppointment,
+  rescheduleAppointment,
+  updateAppointment,
+  getPatientAppointments,
 };

@@ -9,6 +9,9 @@ router.get("/getAppointment/:id", controller.getAppointmentById);
 router.put("/updateAppointment/:id", controller.updateAppointment);
 router.delete("/deleteAppointment/:id", controller.deleteAppointment);
 
+// Get Patient Appointments
+router.get("/getAppointment/patient", controller.getPatientAppointments);
+
 // Special Actions
 router.put("/:id/cancel", controller.cancelAppointment);
 router.put("/:id/reschedule", controller.rescheduleAppointment);

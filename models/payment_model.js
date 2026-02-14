@@ -10,7 +10,6 @@ const paymentSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Appointment',
     default: null,
-    required: true,
   },
   razorpayOrderId: {
     type: String,

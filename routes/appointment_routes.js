@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const controller = require("../controllers/appointment_controller");
+const {protect} = require("../middlewares/auth_middleware");
 
 // CRUD
 router.post("/createAppointment", controller.createAppointment);
@@ -10,7 +11,8 @@ router.put("/updateAppointment/:id", controller.updateAppointment);
 router.delete("/deleteAppointment/:id", controller.deleteAppointment);
 
 // Get Patient Appointments
-router.get("/getAppointment/patient", controller.getPatientAppointments);
+router.get("/getAppointment/patient", protect, controller.getPatientAppointments);
+
 
 // Special Actions
 router.put("/:id/cancel", controller.cancelAppointment);

@@ -193,17 +193,9 @@ const rescheduleAppointment = async (req, res) => {
 
 const getPatientAppointments = async (req, res) => {
   try {
-    const { patientId } = req.params;
-
-    const appointments = await Appointment.find({ patientId })
-      .sort({ appointmentDate: 1 });
-
-    if (!appointments.length) {
-      return res.status(404).json({
-        success: false,
-        message: "No appointments found for this patient",
-      });
-    }
+    const appointments = await Appointment.find({
+      patientId: req.user.id,
+    }).sort({ appointmentDate: 1 });
 
     res.status(200).json({
       success: true,
@@ -213,12 +205,11 @@ const getPatientAppointments = async (req, res) => {
   } catch (error) {
     res.status(500).json({
       success: false,
-      message: "Failed to fetch patient appointments",
+      message: "Failed to fetch appointments",
       error: error.message,
     });
   }
 };
-
 
 module.exports = {
   createAppointment,

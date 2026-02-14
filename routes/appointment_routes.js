@@ -4,7 +4,7 @@ const controller = require("../controllers/appointment_controller");
 const {protect} = require("../middlewares/auth_middleware");
 
 // CRUD
-router.post("/createAppointment", controller.createAppointment);
+router.post("/createAppointment", protect, controller.createAppointment);
 router.get("/getAppointments", controller.getAllAppointments);
 router.get("/getAppointment/:id", controller.getAppointmentById);
 router.put("/updateAppointment/:id", controller.updateAppointment);

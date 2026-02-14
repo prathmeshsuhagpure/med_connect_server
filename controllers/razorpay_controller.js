@@ -67,72 +67,76 @@ const createRazorpayOrder = async (req, res) => {
 };
 
 const verifyRazorpayPayment = async (req, res) => {
-    try {
-        const {
-            razorpay_order_id,
-            razorpay_payment_id,
-            razorpay_signature,
-            appointmentData,
-        } = req.body;
+  try {
+    const {
+      razorpay_order_id,
+      razorpay_payment_id,
+      razorpay_signature,
+    } = req.body;
 
-        if (!razorpay_order_id || !razorpay_payment_id || !razorpay_signature) {
-            return res.status(400).json({
-                success: false,
-                message: 'Missing Razorpay verification data',
-            });
-        }
-
-        // 🔐 Verify signature
-        const expectedSignature = crypto
-            .createHmac('sha256', process.env.RAZORPAY_KEY_SECRET)
-            .update(`${razorpay_order_id}|${razorpay_payment_id}`)
-            .digest('hex');
-
-        if (expectedSignature !== razorpay_signature) {
-            return res.status(400).json({
-                success: false,
-                message: 'Invalid payment signature',
-            });
-        }
-
-        const payment = await Payment.findOneAndUpdate({
-            razorpayOrderId: razorpay_order_id
-        });
-
-        if (!payment) {
-            return res.status(404).json({
-                success: false,
-                message: 'Payment record not found',
-            });
-        }
-
-        payment.razorpayPaymentId = razorpay_payment_id;
-        payment.razorpaySignature = razorpay_signature;
-        payment.status = 'captured';
-
-        const appointment = await Appointment.create({
-            ...appointmentData,
-            status: 'confirmed',
-        });
-
-        payment.appointmentId = appointment._id;
-
-        await payment.save();
-
-        res.status(200).json({
-            success: true,
-            message: 'Payment verified successfully',
-            paymentId: payment._id,
-            appointmentId: appointment._id,
-        });
-    } catch (error) {
-        console.error('Verify payment error:', error);
-        res.status(500).json({
-            success: false,
-            message: error.message,
-        });
+    if (!razorpay_order_id || !razorpay_payment_id || !razorpay_signature) {
+      return res.status(400).json({
+        success: false,
+        message: "Missing Razorpay verification data",
+      });
     }
+
+    // 🔐 Verify signature
+    const expectedSignature = crypto
+      .createHmac("sha256", process.env.RAZORPAY_KEY_SECRET)
+      .update(`${razorpay_order_id}|${razorpay_payment_id}`)
+      .digest("hex");
+
+    if (expectedSignature !== razorpay_signature) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid payment signature",
+      });
+    }
+
+    // ✅ Find payment
+    const payment = await Payment.findOne({
+      razorpayOrderId: razorpay_order_id,
+    });
+
+    if (!payment) {
+      return res.status(404).json({
+        success: false,
+        message: "Payment record not found",
+      });
+    }
+
+    // ✅ Update payment fields
+    payment.razorpayPaymentId = razorpay_payment_id;
+    payment.razorpaySignature = razorpay_signature;
+    payment.status = "captured";
+
+    // ✅ If appointment already exists → confirm it
+    if (payment.appointmentId) {
+      await Appointment.findByIdAndUpdate(
+        payment.appointmentId,
+        { status: "confirmed" }
+      );
+    }
+
+    await payment.save();
+
+    return res.status(200).json({
+      success: true,
+      message: "Payment verified successfully",
+      paymentId: payment._id,
+      appointmentId: payment.appointmentId || null,
+    });
+
+  } catch (error) {
+    console.error("Verify payment error:", error);
+    return res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
 };
+
 
 const getPaymentHistory = async (req, res) => {
     try {

@@ -24,7 +24,7 @@ const createRazorpayOrder = async (req, res) => {
             });
         }
 
-        const { amount } = req.body;
+        const { amount, appointmentId } = req.body;
         if (!amount || amount <= 0) {
             return res.status(400).json({
                 success: false,
@@ -47,7 +47,7 @@ const createRazorpayOrder = async (req, res) => {
             amount,
             status: 'created',
             paymentMethod: 'card',
-            appointmentId: null,
+            appointmentId: appointmentId,
         });
 
         res.status(201).json({

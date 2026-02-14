@@ -9,7 +9,8 @@ const paymentSchema = new mongoose.Schema({
   appointmentId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Appointment',
-    default: null
+    default: null,
+    required: true,
   },
   razorpayOrderId: {
     type: String,

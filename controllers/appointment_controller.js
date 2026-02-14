@@ -11,10 +11,10 @@ const createAppointment = async (req, res) => {
       data: appointment,
     });
   } catch (error) {
+    console.error("Create appointment error:", error);
     res.status(400).json({
       success: false,
-      message: "Failed to create appointment",
-      error: error.message,
+      message: error.message,
     });
   }
 };

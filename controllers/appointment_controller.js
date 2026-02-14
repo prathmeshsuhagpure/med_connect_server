@@ -2,7 +2,10 @@ const Appointment = require("../models/appointment_model");
 
 const createAppointment = async (req, res) => {
   try {
-    const appointment = new Appointment(req.body);
+    const appointment = new Appointment({
+      ...req.body,
+      patientId: req.user.id,
+    });
     await appointment.save();
 
     res.status(201).json({

@@ -11,7 +11,7 @@ router.put("/updateAppointment/:id", controller.updateAppointment);
 router.delete("/deleteAppointment/:id", controller.deleteAppointment);
 
 // Get Patient Appointments
-router.get("/getAppointment/patient", protect, controller.getPatientAppointments);
+router.get("/getAppointment/patient/:patientId", protect, controller.getPatientAppointments);
 
 
 // Special Actions

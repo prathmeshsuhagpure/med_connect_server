@@ -22,16 +22,9 @@ router.get('/:id', getHospitalById);
 // Hospital-specific doctor routes
 router.get('/:hospitalId/doctors', getDoctorsByHospital);
 
-// CREATE
 router.post("/addHospital", protect, createHospital);
-
-// UPDATE
 router.put("/updateHospital/:id", protect, updateHospital);
-
-// DELETE
 router.delete("/deleteHospital/:id", protect, deleteHospital);
-
-// TOGGLE STATUS
 router.patch("/:id/toggle-status", protect, toggleHospitalStatus);
 
 

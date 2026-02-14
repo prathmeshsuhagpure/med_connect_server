@@ -1,4 +1,4 @@
-const Hospital = require("../models/hospital_model");
+const Hospital = require("../models/user/hospital_model");
 
 const getHospitals = async (req, res) => {
   try {

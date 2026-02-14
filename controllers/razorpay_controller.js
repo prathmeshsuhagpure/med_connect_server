@@ -25,7 +25,7 @@ const createRazorpayOrder = async (req, res) => {
       });
     }
 
-    const { amount, currency = 'INR' } = req.body;
+    const { amount } = req.body;
     if (!amount || amount <= 0) {
       return res.status(400).json({
         success: false,
@@ -38,16 +38,14 @@ const createRazorpayOrder = async (req, res) => {
 
     const order = await razorpay.orders.create({
       amount: amountInPaise,
-      currency,
       receipt: `receipt_${Date.now()}`,
       payment_capture: 1,
     });
 
     const payment = await Payment.create({
-      userId: req.user._id,
+      patientId: req.user._id,
       razorpayOrderId: order.id,
       amount,
-      currency,
       status: 'created',
       paymentMethod: 'card',
     });
@@ -57,7 +55,6 @@ const createRazorpayOrder = async (req, res) => {
       orderId: order.id,
       paymentId: payment._id,
       amount,
-      currency,
     });
   } catch (error) {
     console.error('Create Razorpay order error:', error);

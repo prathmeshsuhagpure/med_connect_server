@@ -2,12 +2,6 @@ const mongoose = require("mongoose");
 
 const appointmentSchema = new mongoose.Schema(
   {
-    id: {
-      type: String,
-      required: true,
-      unique: true,
-    },
-
     hospitalName: {
       type: String,
       required: true,
@@ -38,7 +32,7 @@ const appointmentSchema = new mongoose.Schema(
     },
 
     appointmentTime: {
-      type: String, // "10:30 AM"
+      type: String, 
       required: true,
     },
 
@@ -56,7 +50,6 @@ const appointmentSchema = new mongoose.Schema(
 
     appointmentType: {
       type: String,
-      enum: ["In-Person", "Video Consultation"],
       required: true,
     },
 
@@ -66,7 +59,7 @@ const appointmentSchema = new mongoose.Schema(
     },
   },
   {
-    timestamps: true, // adds createdAt and updatedAt
+    timestamps: true,
   }
 );
 

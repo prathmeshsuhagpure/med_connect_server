@@ -15,7 +15,7 @@ const createAppointment = async (req, res) => {
   } catch (error) {
     console.error("CREATE APPOINTMENT ERROR:", error); // 👈 VERY IMPORTANT
 
-    res.status(500).json({
+    res.status(400).json({
       success: false,
       message: "Failed to create appointment",
       error: error.message,

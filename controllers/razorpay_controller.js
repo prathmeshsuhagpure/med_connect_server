@@ -43,7 +43,6 @@ const createRazorpayOrder = async (req, res) => {
       payment_capture: 1,
     });
 
-    // ✅ CREATE PAYMENT DOCUMENT (ONLY PLACE)
     const payment = await Payment.create({
       userId: req.user._id,
       razorpayOrderId: order.id,
@@ -64,7 +63,8 @@ const createRazorpayOrder = async (req, res) => {
     console.error('Create Razorpay order error:', error);
     res.status(500).json({
       success: false,
-      message: 'Failed to create order',
+      message: error.message,
+      stack: error.stack, 
     });
   }
 };

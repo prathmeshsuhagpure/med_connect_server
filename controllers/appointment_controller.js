@@ -66,35 +66,6 @@ const getAppointmentById = async (req, res) => {
   }
 };
 
-const updateAppointment = async (req, res) => {
-  try {
-    const appointment = await Appointment.findByIdAndUpdate(
-      req.params.id,
-      req.body,
-      { new: true }
-    );
-
-    if (!appointment) {
-      return res.status(404).json({
-        success: false,
-        message: "Appointment not found",
-      });
-    }
-
-    res.status(200).json({
-      success: true,
-      message: "Appointment updated successfully",
-      data: appointment,
-    });
-  } catch (error) {
-    res.status(500).json({
-      success: false,
-      message: "Failed to update appointment",
-      error: error.message,
-    });
-  }
-};
-
 const deleteAppointment = async (req, res) => {
   try {
     const appointment = await Appointment.findByIdAndDelete(req.params.id);
@@ -123,6 +94,13 @@ const cancelAppointment = async (req, res) => {
   try {
     const { reason, cancelledBy } = req.body;
 
+    if (!["patient", "hospital"].includes(cancelledBy)) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid cancelledBy value. Must be 'patient' or 'hospital'.",
+      });
+    }
+
     const status =
       cancelledBy === "patient"
         ? "cancelledByPatient"
@@ -146,7 +124,7 @@ const cancelAppointment = async (req, res) => {
 
     res.status(200).json({
       success: true,
-      message: "Appointment cancelled successfully",
+      message: `Appointment cancelled by ${cancelledBy}`,
       data: appointment,
     });
   } catch (error) {
@@ -221,6 +199,5 @@ module.exports = {
   cancelAppointment,
   deleteAppointment,
   rescheduleAppointment,
-  updateAppointment,
   getPatientAppointments,
 };

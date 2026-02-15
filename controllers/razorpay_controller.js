@@ -3,7 +3,6 @@ const crypto = require('crypto');
 const Payment = require('../models/payment_model');
 const Appointment = require('../models/appointment_model');
 
-
 const getRazorpayInstance = () => {
     if (!process.env.RAZORPAY_KEY_ID || !process.env.RAZORPAY_KEY_SECRET) {
         throw new Error('Razorpay credentials are missing');
@@ -109,13 +108,6 @@ const verifyRazorpayPayment = async (req, res) => {
     payment.razorpayPaymentId = razorpay_payment_id;
     payment.razorpaySignature = razorpay_signature;
     payment.status = "captured";
-
-   /*  if (payment.appointmentId) {
-      await Appointment.findByIdAndUpdate(
-        payment.appointmentId,
-        { status: "confirmed" }
-      );
-    } */
 
     await payment.save();
 

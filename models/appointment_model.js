@@ -8,11 +8,11 @@ const appointmentSchema = new mongoose.Schema(
       required: true,
     },
 
-    hospitalId: {
+    /* hospitalId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Hospital",
       required: true,
-    },
+    }, */
 
     hospitalName: {
       type: String,

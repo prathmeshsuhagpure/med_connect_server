@@ -90,14 +90,93 @@ const deleteAppointment = async (req, res) => {
   }
 };
 
+const getAppointmentsByHospital = async (req, res) => {
+  try {
+    const { hospitalId } = req.params;
+
+    if (!hospitalId) {
+      return res.status(400).json({
+        success: false,
+        message: "Hospital ID is required",
+      });
+    }
+
+    const appointments = await Appointment.find({ hospitalId })
+      .sort({ appointmentDate: 1, appointmentTime: 1 })
+      .populate('patientId', 'name email phoneNumber profilePicture')
+      .populate('doctorId', 'name specialization profilePicture');
+
+    // ✅ Map to include patientName in response
+    const appointmentsWithPatientName = appointments.map(apt => {
+      const aptObj = apt.toObject();
+      if (apt.patientId) {
+        aptObj.patientName = apt.patientId.name;
+      }
+      return aptObj;
+    });
+
+    res.status(200).json({
+      success: true,
+      data: appointmentsWithPatientName,
+    });
+  } catch (error) {
+    console.error("Get appointments by hospital error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Failed to fetch hospital appointments",
+      error: error.message,
+    });
+  }
+};
+
+const getAppointmentsByDoctor = async (req, res) => {
+  try {
+    const { doctorId } = req.params;
+
+    if (!doctorId) {
+      return res.status(400).json({
+        success: false,
+        message: "Doctor ID is required",
+      });
+    }
+
+    const appointments = await Appointment.find({ doctorId })
+      .sort({ appointmentDate: 1, appointmentTime: 1 })
+      .populate('patientId', 'name email phoneNumber profilePicture')
+      .populate('hospitalId', 'hospitalName address phoneNumber');
+
+    // ✅ Map to include patientName in response
+    const appointmentsWithPatientName = appointments.map(apt => {
+      const aptObj = apt.toObject();
+      if (apt.patientId) {
+        aptObj.patientName = apt.patientId.name;
+      }
+      return aptObj;
+    });
+
+    res.status(200).json({
+      success: true,
+      data: appointmentsWithPatientName,
+    });
+  } catch (error) {
+    console.error("Get appointments by doctor error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Failed to fetch doctor appointments",
+      error: error.message,
+    });
+  }
+};
+
+// ✅ Updated cancelAppointment to handle cancelledBy
 const cancelAppointment = async (req, res) => {
   try {
     const { reason, cancelledBy } = req.body;
 
-    if (!["patient", "hospital"].includes(cancelledBy)) {
+    if (!cancelledBy || !['patient', 'hospital'].includes(cancelledBy)) {
       return res.status(400).json({
         success: false,
-        message: "Invalid cancelledBy value. Must be 'patient' or 'hospital'.",
+        message: "cancelledBy must be 'patient' or 'hospital'",
       });
     }
 
@@ -124,7 +203,7 @@ const cancelAppointment = async (req, res) => {
 
     res.status(200).json({
       success: true,
-      message: `Appointment cancelled by ${cancelledBy}`,
+      message: "Appointment cancelled successfully",
       data: appointment,
     });
   } catch (error) {
@@ -172,7 +251,7 @@ const rescheduleAppointment = async (req, res) => {
   }
 };
 
-const getPatientAppointments = async (req, res) => {
+const getAppointmentsByPatient = async (req, res) => {
   try {
     const appointments = await Appointment.find({
       patientId: req.user.id,
@@ -199,5 +278,7 @@ module.exports = {
   cancelAppointment,
   deleteAppointment,
   rescheduleAppointment,
-  getPatientAppointments,
+  getAppointmentsByPatient,
+  getAppointmentsByDoctor,
+  getAppointmentsByHospital,
 };

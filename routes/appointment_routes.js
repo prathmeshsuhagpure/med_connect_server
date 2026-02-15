@@ -17,10 +17,10 @@ router.delete("/deleteAppointment/:id", controller.deleteAppointment);
 router.get("/getAppointment/patient/:patientId", protect, controller.getAppointmentsByPatient);
 
 // Get Hospital Appointments
-router.get('getAppointment/hospital/:hospitalId', protect, controller.getAppointmentsByHospital);
+router.get('/getAppointment/hospital/:hospitalId', protect, controller.getAppointmentsByHospital);
 
 // Get Doctor Appointment
-router.get('getAppointment/doctor/:doctorId', protect, controller.getAppointmentsByDoctor);
+router.get('/getAppointment/doctor/:doctorId', protect, controller.getAppointmentsByDoctor);
 
 // Special Actions
 router.put("/:id/cancel", controller.cancelAppointment);

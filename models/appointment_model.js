@@ -63,6 +63,16 @@ const appointmentSchema = new mongoose.Schema(
       type: String,
       default: null,
     },
+    paymentStatus: {
+      type: String,
+      enum: ["unpaid", "paidOnline", "payAtHospital"],
+      default: "unpaid",
+    },
+    consultationFee: {
+      type: Number,
+      required: false,
+      min: 0,
+    },
   },
   {
     timestamps: true,

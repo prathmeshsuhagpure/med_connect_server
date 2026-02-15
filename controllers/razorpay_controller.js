@@ -106,18 +106,16 @@ const verifyRazorpayPayment = async (req, res) => {
       });
     }
 
-    // ✅ Update payment fields
     payment.razorpayPaymentId = razorpay_payment_id;
     payment.razorpaySignature = razorpay_signature;
     payment.status = "captured";
 
-    // ✅ If appointment already exists → confirm it
-    if (payment.appointmentId) {
+   /*  if (payment.appointmentId) {
       await Appointment.findByIdAndUpdate(
         payment.appointmentId,
         { status: "confirmed" }
       );
-    }
+    } */
 
     await payment.save();
 

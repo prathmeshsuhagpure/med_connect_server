@@ -2,14 +2,17 @@ const express = require('express');
 const router = express.Router();
 
 const {
-  getPatients,
-  getPatientById,
+  getAllPatients,
+  getPatientsByHospital,
+  getPatientsByDoctor,
 } = require('../controllers/patient_controller');
 
 const { protect } = require('../middlewares/auth_middleware');
 
-router.get('/getAllPatients', protect, getPatients );
+router.get('/getAllPatients', protect, getAllPatients );
 
-router.get('/getPatientById/:id', protect, getPatientById );
+router.get('/getPatientByHospital/:id', protect, getPatientsByHospital );
+
+router.get("/getPatientByDoctor/:id", protect, getPatientsByDoctor);
 
 module.exports = router;

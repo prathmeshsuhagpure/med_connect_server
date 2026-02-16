@@ -5,6 +5,14 @@ const patientSchema = createBaseUserSchema();
 
 // Add patient-specific fields
 patientSchema.add({
+  hospital: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Hospital"
+  },
+  assignedDoctors: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Doctor"
+  }],
   dateOfBirth: {
     type: String,
     default: null,
@@ -79,7 +87,7 @@ patientSchema.methods.getRoleData = function () {
 };
 
 // Virtual to calculate age
-patientSchema.virtual('age').get(function() {
+patientSchema.virtual('age').get(function () {
   if (!this.dateOfBirth) return null;
   try {
     const dob = new Date(this.dateOfBirth);
@@ -96,11 +104,11 @@ patientSchema.virtual('age').get(function() {
 });
 
 // Helper methods
-patientSchema.methods.hasEmergencyContact = function() {
+patientSchema.methods.hasEmergencyContact = function () {
   return !!(this.emergencyContact?.name && this.emergencyContact?.phone);
 };
 
-patientSchema.methods.hasCompleteProfile = function() {
+patientSchema.methods.hasCompleteProfile = function () {
   return !!(this.dateOfBirth && this.gender && this.bloodGroup);
 };
 

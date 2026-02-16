@@ -1,11 +1,9 @@
 const Patient = require("../models/user/patient_model");
+const Appointment = require("../models/appointment_model");
 
 const getAllPatients = async (req, res) => {
   try {
-    const patients = await Patient.find()
-      .populate("hospital", "name email")
-      .populate("assignedDoctors", "name specialization")
-      .select("-__v");
+    const patients = await Patient.find().select("-__v");
 
     res.status(200).json({
       success: true,
@@ -26,15 +24,22 @@ const getPatientsByHospital = async (req, res) => {
   try {
     const hospitalId = req.params.hospitalId;
 
-    const patients = await Patient.find({ hospital: hospitalId })
-      .populate("hospital", "name email")
-      .populate("assignedDoctors", "name specialization")
-      .select("-__v");
+    const appointments = await Appointment.find({ hospitalId: hospitalId })
+      .populate({
+        path: "patient",
+        select: "-__v",
+      });
+
+    const uniquePatients = [
+      ...new Map(
+        appointments.map(app => [app.patientId._id.toString(), app.patientId])
+      ).values(),
+    ];
 
     res.status(200).json({
       success: true,
-      count: patients.length,
-      data: patients,
+      count: uniquePatients.length,
+      data: uniquePatients,
     });
 
   } catch (error) {
@@ -50,17 +55,23 @@ const getPatientsByDoctor = async (req, res) => {
   try {
     const doctorId = req.params.doctorId;
 
-    const patients = await Patient.find({
-      assignedDoctors: doctorId,
-    })
-      .populate("hospital", "name email")
-      .populate("assignedDoctors", "name specialization")
-      .select("-__v");
+    const appointments = await Appointment.find({ doctorId: doctorId })
+      .populate({
+        path: "patient",
+        select: "-__v",
+      });
+
+    // Extract unique patients
+    const uniquePatients = [
+      ...new Map(
+        appointments.map(app => [app.patientId._id.toString(), app.patientId])
+      ).values(),
+    ];
 
     res.status(200).json({
       success: true,
-      count: patients.length,
-      data: patients,
+      count: uniquePatients.length,
+      data: uniquePatients,
     });
 
   } catch (error) {
@@ -71,6 +82,7 @@ const getPatientsByDoctor = async (req, res) => {
     });
   }
 };
+
 
 module.exports = {
   getAllPatients,

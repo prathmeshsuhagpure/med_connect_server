@@ -271,6 +271,45 @@ const getAppointmentsByPatient = async (req, res) => {
   }
 };
 
+const fetchRecentPatients = async (req, res) => {
+  try {
+    // Default: last 30 days, but allow custom range via query params
+    const days = parseInt(req.query.days) || 30;
+    const sinceDate = new Date();
+    sinceDate.setDate(sinceDate.getDate() - days);
+
+    // Find appointments within the timeframe and populate patient info
+    const appointments = await Appointment.find({
+      appointmentDate: { $gte: sinceDate }
+    })
+      .populate('patientId', 'name email phoneNumber profilePicture')
+      .sort({ appointmentDate: -1 });
+
+    // Extract unique patients
+    const uniquePatientsMap = new Map();
+    appointments.forEach(apt => {
+      if (apt.patientId) {
+        uniquePatientsMap.set(apt.patientId._id.toString(), apt.patientId);
+      }
+    });
+
+    const recentPatients = Array.from(uniquePatientsMap.values());
+
+    res.status(200).json({
+      success: true,
+      count: recentPatients.length,
+      data: recentPatients,
+    });
+  } catch (error) {
+    console.error("Fetch recent patients error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Failed to fetch recent patients",
+      error: error.message,
+    });
+  }
+};
+
 module.exports = {
   createAppointment,
   getAllAppointments,
@@ -281,4 +320,5 @@ module.exports = {
   getAppointmentsByPatient,
   getAppointmentsByDoctor,
   getAppointmentsByHospital,
+  fetchRecentPatients,
 };

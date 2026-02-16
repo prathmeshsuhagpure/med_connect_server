@@ -1,6 +1,8 @@
 const Patient = require("../models/user/patient_model");
 const Appointment = require("../models/appointment_model");
 
+
+// ✅ Get All Patients
 const getAllPatients = async (req, res) => {
   try {
     const patients = await Patient.find().select("-__v");
@@ -15,24 +17,30 @@ const getAllPatients = async (req, res) => {
     console.error("Error fetching all patients:", error);
     res.status(500).json({
       success: false,
-      message: "Server Error",
+      message: error.message,
     });
   }
 };
 
+
+// ✅ Get Patients By Hospital (Corrected)
 const getPatientsByHospital = async (req, res) => {
   try {
     const hospitalId = req.params.hospitalId;
 
-    const appointments = await Appointment.find({ hospitalId: hospitalId })
+    const appointments = await Appointment.find({ hospitalId })
       .populate({
-        path: "patient",
+        path: "patientId",
         select: "-__v",
       });
 
+    // Remove duplicate patients
     const uniquePatients = [
       ...new Map(
-        appointments.map(app => [app.patientId._id.toString(), app.patientId])
+        appointments.map(app => [
+          app.patientId._id.toString(),
+          app.patientId,
+        ])
       ).values(),
     ];
 
@@ -46,25 +54,29 @@ const getPatientsByHospital = async (req, res) => {
     console.error("Error fetching hospital patients:", error);
     res.status(500).json({
       success: false,
-      message: "Server Error",
+      message: error.message,
     });
   }
 };
 
+
+// ✅ Get Patients By Doctor (Corrected)
 const getPatientsByDoctor = async (req, res) => {
   try {
     const doctorId = req.params.doctorId;
 
-    const appointments = await Appointment.find({ doctorId: doctorId })
+    const appointments = await Appointment.find({ doctorId })
       .populate({
-        path: "patient",
+        path: "patientId",
         select: "-__v",
       });
 
-    // Extract unique patients
     const uniquePatients = [
       ...new Map(
-        appointments.map(app => [app.patientId._id.toString(), app.patientId])
+        appointments.map(app => [
+          app.patientId._id.toString(),
+          app.patientId,
+        ])
       ).values(),
     ];
 
@@ -78,7 +90,7 @@ const getPatientsByDoctor = async (req, res) => {
     console.error("Error fetching doctor patients:", error);
     res.status(500).json({
       success: false,
-      message: "Server Error",
+      message: error.message,
     });
   }
 };

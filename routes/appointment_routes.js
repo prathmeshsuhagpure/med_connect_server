@@ -27,7 +27,4 @@ router.put("/:id/cancel", controller.cancelAppointment);
 router.put("/:id/reschedule", controller.rescheduleAppointment);
 //router.put('/:id', protect, controller.updateAppointment);
 
-// Fetch Recent Appointments
-router.get("/getRecentPatients", controller.fetchRecentPatients);
-
 module.exports = router;

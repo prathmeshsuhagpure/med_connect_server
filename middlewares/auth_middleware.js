@@ -24,13 +24,6 @@ const protect = async (req, res, next) => {
 
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
-    /**
-     * decoded MUST contain:
-     * {
-     *   id: userId,
-     *   role: 'patient' | 'doctor' | 'hospital'
-     * }
-     */
     const user = await UserFactory.findById(decoded.id, decoded.role);
 
     if (!user) {

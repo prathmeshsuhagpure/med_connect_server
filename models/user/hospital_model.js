@@ -3,7 +3,6 @@ const createBaseUserSchema = require("./base_user_model");
 
 const hospitalSchema = createBaseUserSchema();
 
-// ---------------- Hospital Specific Fields ----------------
 hospitalSchema.add({
   hospitalName: {
     type: String,
@@ -45,6 +44,7 @@ hospitalSchema.add({
       start: String,
       end: String,
     },
+  },
 
     coverPhoto: {
       type: String,
@@ -155,7 +155,7 @@ hospitalSchema.add({
       default: null,
     },
   },
-});
+);
 
 // ---------------- Hooks ----------------
 hospitalSchema.pre("validate", function () {

@@ -3,7 +3,6 @@ const createBaseUserSchema = require("./base_user_model");
 
 const doctorSchema = createBaseUserSchema();
 
-// Add doctor-specific fields
 doctorSchema.add({
   hospitalId: {
     type: mongoose.Schema.Types.ObjectId,

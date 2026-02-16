@@ -11,8 +11,8 @@ const { protect } = require('../middlewares/auth_middleware');
 
 router.get('/getAllPatients', protect, getAllPatients );
 
-router.get('/getPatientByHospital/:id', protect, getPatientsByHospital );
+router.get('/getPatientByHospital/:hospitalId', protect, getPatientsByHospital );
 
-router.get("/getPatientByDoctor/:id", protect, getPatientsByDoctor);
+router.get("/getPatientByDoctor/:hospitalId", protect, getPatientsByDoctor);
 
 module.exports = router;

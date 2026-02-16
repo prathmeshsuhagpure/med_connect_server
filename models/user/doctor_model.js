@@ -5,6 +5,11 @@ const doctorSchema = createBaseUserSchema();
 
 // Add doctor-specific fields
 doctorSchema.add({
+  hospitalId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Hospital",
+    required: true,
+  },
   specialization: {
     type: String,
     default: null,
@@ -24,11 +29,6 @@ doctorSchema.add({
   hospitalAffiliation: {
     type: String,
     default: null,
-  },
-  hospitalId: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "Hospital",
-    required: true,
   },
   consultationFee: {
     type: String,
@@ -89,11 +89,7 @@ doctorSchema.methods.getVerificationStatus = function () {
   return this.isVerified ? 'Verified' : 'Pending Verification';
 };
 
-doctorSchema.methods.getDisplayName = function () {
-  return `Dr. ${this.name}`;
-};
 
-// Create model with collection name 'doctors'
 const Doctor = mongoose.model('Doctor', doctorSchema, 'doctors');
 
 module.exports = Doctor;

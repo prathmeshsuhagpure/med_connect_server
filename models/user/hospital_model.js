@@ -16,12 +16,6 @@ hospitalSchema.add({
     default: null,
   },
 
-  licenseNumber: {
-    type: String,
-    trim: true,
-    default: null,
-  },
-
   description: {
     type: String,
     default: null,
@@ -146,7 +140,6 @@ hospitalSchema.add({
 
     ambulanceService: {
       type: Boolean,
-      default: false,
     },
 
     // ---------------- Search Helpers ----------------

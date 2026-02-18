@@ -91,9 +91,9 @@ const getPatientsByDoctor = async (req, res) => {
 const getRecentPatientsByHospital = async (req, res) => {
   try {
     const hospitalId = req.params.hospitalId;
-    const appointments = await Appointment.find({ hospitalId })
-      .sort({ createdAt: -1 })
-      .limit(20)
+    const appointments = await Appointment.find({ hospitalId, status: "completed", })
+      .sort({ updatedAt: -1 })
+      .limit(10)
       .populate({
         path: "patientId", select: "-__v",
       });

@@ -271,6 +271,39 @@ const getAppointmentsByPatient = async (req, res) => {
   }
 };
 
+const confirmAppointmentByHospital = async (req, res) => {
+  try {
+    const appointmentId = req.params.id;
+    const appointment = await Appointment.findByIdAndUpdate(
+      appointmentId, {
+      status: "confirmed",
+      cancellationReason: null,
+    },
+      { new: true })
+      .populate("patientId", "name email phoneNumber profilePicture")
+      .populate("doctorId", "name specialization profilePicture")
+      .populate("hospitalId", "hospitalName address phoneNumber");
+    if (!appointment) {
+      return res.status(404).json({
+        success: false,
+        message: "Appointment not found",
+      });
+    }
+    res.status(200).json({
+      success: true,
+      message: "Appointment confirmed successfully by hospital",
+      data: appointment,
+    });
+  } catch (error) {
+    console.error("Confirm appointment error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Failed to confirm appointment",
+      error: error.message,
+    });
+  }
+};
+
 module.exports = {
   createAppointment,
   getAllAppointments,
@@ -281,4 +314,5 @@ module.exports = {
   getAppointmentsByPatient,
   getAppointmentsByDoctor,
   getAppointmentsByHospital,
+  confirmAppointmentByHospital,
 };

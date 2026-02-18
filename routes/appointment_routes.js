@@ -25,6 +25,6 @@ router.get('/getAppointment/doctor/:doctorId', protect, controller.getAppointmen
 // Special Actions
 router.put("/:id/cancel", controller.cancelAppointment);
 router.put("/:id/reschedule", controller.rescheduleAppointment);
-//router.put('/:id', protect, controller.updateAppointment);
+router.put("/:id/confirm", controller.confirmAppointmentByHospital);
 
 module.exports = router;

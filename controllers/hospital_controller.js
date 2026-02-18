@@ -96,7 +96,7 @@ const updateHospital = async (req, res) => {
 
     if (updateData.hospitalImages) {
       updateData.$push = {
-        hospitalImages: { $each: updateData.hospitalImages.map(img => img.url) },
+        hospitalImages: { $each: updateData.hospitalImages },
       };
       delete updateData.hospitalImages;
     }

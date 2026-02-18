@@ -2,9 +2,6 @@ const cloudinary = require('../config/cloudinary');
 
 const uploadImage = async (req, res) => {
   try {
-    console.log("Upload API called");
-    console.log("Files received:", req.files?.length);
-
     const user = req.user;
     const uploadPath = req.path;
 
@@ -71,17 +68,7 @@ const uploadImage = async (req, res) => {
 
       const results = await Promise.all(uploadPromises);
 
-      if (!user.hospitalImages) {
-        user.hospitalImages = [];
-      }
-
-      // ✅ Store ONLY URL (STRING)
-      results.forEach((img) => {
-        user.hospitalImages.push(img.secure_url);
-      });
-
-      await user.save();
-
+      // ✅ DO NOT SAVE TO DB HERE
       return res.status(200).json({
         success: true,
         images: results.map((r) => r.secure_url),
@@ -118,15 +105,16 @@ const uploadImage = async (req, res) => {
       stream.end(req.file.buffer);
     });
 
+    // Profile and cover can still be saved immediately
     if (type === 'profile') {
       user.profilePicture = uploadResult.secure_url;
+      await user.save();
     }
 
     if (type === 'cover') {
       user.coverPhoto = uploadResult.secure_url;
+      await user.save();
     }
-
-    await user.save();
 
     return res.status(200).json({
       success: true,

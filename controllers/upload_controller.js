@@ -15,8 +15,8 @@ const uploadImage = async (req, res) => {
     // Determine upload type
     let type;
     if (uploadPath.includes('profile-picture')) type = 'profile';
-    if (uploadPath.includes('cover-photo')) type = 'cover';
-    if (uploadPath.includes('hospital-images')) type = 'hospital';
+    else if (uploadPath.includes('cover-photo')) type = 'cover';
+    else if (uploadPath.includes('hospital-images')) type = 'hospital';
 
     const folderMap = {
       profile: 'med_connect/profile_pictures',
@@ -33,7 +33,9 @@ const uploadImage = async (req, res) => {
       });
     }
 
+    // ===============================
     // MULTIPLE FILES (Hospital Images)
+    // ===============================
     if (type === 'hospital') {
       if (!req.files || req.files.length === 0) {
         return res.status(400).json({
@@ -42,27 +44,6 @@ const uploadImage = async (req, res) => {
         });
       }
 
-      const uploadedImages = [];
-
-      for (const file of req.files) {
-        const result = await cloudinary.uploader.upload_stream(
-          {
-            folder: selectedFolder,
-            resource_type: 'image',
-            transformation: [
-              { width: 1200, crop: 'limit' },
-              { quality: 'auto' },
-              { fetch_format: 'auto' },
-            ],
-          },
-          () => {}
-        );
-
-        // ⚠ upload_stream doesn't work with await directly
-        // So we use promise wrapper below instead
-      }
-
-      // Instead use Promise version below 👇
       const uploadPromises = req.files.map((file) => {
         return new Promise((resolve, reject) => {
           const stream = cloudinary.uploader.upload_stream(
@@ -87,13 +68,13 @@ const uploadImage = async (req, res) => {
 
       const results = await Promise.all(uploadPromises);
 
-      if (!user.hospitalImages) user.hospitalImages = [];
+      if (!user.hospitalImages) {
+        user.hospitalImages = [];
+      }
 
+      // ✅ Store ONLY URL (STRING)
       results.forEach((img) => {
-        user.hospitalImages.push({
-          url: img.secure_url,
-          publicId: img.public_id,
-        });
+        user.hospitalImages.push(img.secure_url);
       });
 
       await user.save();
@@ -104,7 +85,9 @@ const uploadImage = async (req, res) => {
       });
     }
 
+    // ===============================
     // SINGLE FILE (Profile / Cover)
+    // ===============================
     if (!req.file) {
       return res.status(400).json({
         success: false,
@@ -133,19 +116,11 @@ const uploadImage = async (req, res) => {
     });
 
     if (type === 'profile') {
-      if (user.profilePicturePublicId) {
-        await cloudinary.uploader.destroy(user.profilePicturePublicId);
-      }
       user.profilePicture = uploadResult.secure_url;
-      user.profilePicturePublicId = uploadResult.public_id;
     }
 
     if (type === 'cover') {
-      if (user.coverPhotoPublicId) {
-        await cloudinary.uploader.destroy(user.coverPhotoPublicId);
-      }
       user.coverPhoto = uploadResult.secure_url;
-      user.coverPhotoPublicId = uploadResult.public_id;
     }
 
     await user.save();

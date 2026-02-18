@@ -132,18 +132,10 @@ hospitalSchema.add({
     },
   ],
 
-  hospitalImages: [
-    {
-      url: {
-        type: String,
-        required: true,
-      },
-      publicId: {
-        type: String,
-        required: true,
-      },
-    },
-  ],
+  hospitalImages: {
+    type: [String],
+    default: [],
+  },
 
   ambulanceService: {
     type: Boolean,

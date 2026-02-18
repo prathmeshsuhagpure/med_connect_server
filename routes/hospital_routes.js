@@ -1,6 +1,7 @@
 // routes/hospitalRoutes.js
 const express = require('express');
 const router = express.Router();
+
 const {
     getHospitals,
     createHospital,
@@ -12,7 +13,6 @@ const {
 
 const { getDoctorsByHospital } = require('../controllers/doctor_controller');
 
-// Import middleware
 const { protect } = require('../middlewares/auth_middleware');
 
 

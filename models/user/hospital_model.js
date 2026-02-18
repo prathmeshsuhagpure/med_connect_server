@@ -141,7 +141,6 @@ hospitalSchema.add({
     type: Boolean,
   },
 
-  // ---------------- Search Helpers ----------------
   distance: {
     type: Number,
     default: null,
@@ -149,14 +148,12 @@ hospitalSchema.add({
 },
 );
 
-// ---------------- Hooks ----------------
 hospitalSchema.pre("validate", function () {
   if (!this.role) {
     this.role = "hospital";
   }
 });
 
-// ---------------- Instance Methods ----------------
 hospitalSchema.methods.getRoleData = function () {
   const baseData = this.getBaseData();
 
@@ -164,7 +161,6 @@ hospitalSchema.methods.getRoleData = function () {
     ...baseData,
     hospitalName: this.hospitalName,
     registrationNumber: this.registrationNumber,
-    licenseNumber: this.licenseNumber,
     description: this.description,
     facilities: this.facilities,
     operatingHours: this.operatingHours,
@@ -190,7 +186,6 @@ hospitalSchema.methods.getRoleData = function () {
   };
 };
 
-// ---------------- Helper Methods ----------------
 hospitalSchema.methods.hasCompleteProfile = function () {
   return Boolean(
     this.hospitalName &&
@@ -208,11 +203,9 @@ hospitalSchema.methods.getDisplayName = function () {
   return this.hospitalName || this.name;
 };
 
-// ---------------- Indexes (IMPORTANT) ----------------
 hospitalSchema.index({ city: 1, state: 1 });
 hospitalSchema.index({ hospitalName: "text" });
 
-// ---------------- Model ----------------
 const Hospital = mongoose.model("Hospital", hospitalSchema, "hospitals");
 
 module.exports = Hospital;

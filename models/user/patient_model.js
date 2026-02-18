@@ -58,6 +58,10 @@ patientSchema.add({
       type: String,
       default: '',
     },
+    profilePicture: {
+      type: String,
+      default: "",
+    },
   },
 });
 
@@ -83,6 +87,7 @@ patientSchema.methods.getRoleData = function () {
     allergies: this.medicalInfo?.allergies,
     medications: this.medicalInfo?.medications,
     conditions: this.medicalInfo?.conditions,
+    profilePicture: this.profilePicture,
   };
 };
 

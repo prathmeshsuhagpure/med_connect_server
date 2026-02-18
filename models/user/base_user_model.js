@@ -35,14 +35,6 @@ const createBaseUserSchema = () => {
         type: String,
         default: null,
       },
-      profilePicture: {
-        type: String,
-        default: "",
-      },
-      profilePicturePublicId: {
-        type: String,
-        default: null,
-      },
       isActive: {
         type: Boolean,
         default: true,

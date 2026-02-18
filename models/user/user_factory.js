@@ -189,10 +189,9 @@ class UserFactory {
   }
 }
 
-// Export models and factory
 module.exports = {
-  Patient,        // Patient model
-  Hospital,       // Hospital model
-  Doctor,         // Doctor model
-  UserFactory,    // Factory class
+  Patient,        
+  Hospital,       
+  Doctor,         
+  UserFactory,    
 };

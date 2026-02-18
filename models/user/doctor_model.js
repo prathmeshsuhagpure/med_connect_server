@@ -55,6 +55,10 @@ doctorSchema.add({
     type: Boolean,
     default: false,
   },
+  profilePicture: {
+    type: String,
+    default: "",
+  },
 });
 
 // Set default role for doctors
@@ -80,6 +84,7 @@ doctorSchema.methods.getRoleData = function () {
     totalReviews: this.totalReviews,
     department: this.department,
     isAvailable: this.isAvailable,
+    profilePicture: this.profilePicture,
   };
 };
 

@@ -92,9 +92,18 @@ const createHospital = async (req, res) => {
 
 const updateHospital = async (req, res) => {
   try {
+    const updateData = { ...req.body };
+
+    if (updateData.hospitalImages) {
+      updateData.$push = {
+        hospitalImages: { $each: updateData.hospitalImages },
+      };
+      delete updateData.hospitalImages;
+    }
+
     const hospital = await Hospital.findByIdAndUpdate(
       req.params.id,
-      req.body,
+      updateData,
       { new: true, runValidators: true }
     );
 
@@ -167,10 +176,10 @@ const toggleHospitalStatus = async (req, res) => {
 };
 
 module.exports = {
-  toggleHospitalStatus, 
-  deleteHospital, 
-  updateHospital, 
-  getHospitals, 
-  createHospital, 
+  toggleHospitalStatus,
+  deleteHospital,
+  updateHospital,
+  getHospitals,
+  createHospital,
   getHospitalById
 };

@@ -2,6 +2,9 @@ const cloudinary = require('../config/cloudinary');
 
 const uploadImage = async (req, res) => {
   try {
+    console.log("Upload API called");
+    console.log("Files received:", req.files?.length);
+
     const user = req.user;
     const uploadPath = req.path;
 

@@ -40,114 +40,121 @@ hospitalSchema.add({
     },
   },
 
-    coverPhoto: {
-      type: String,
-      default: null,
-    },
-
-    // ---------------- Contact & Location ----------------
-    emergencyPhoneNumber: {
-      type: String,
-      default: null,
-    },
-
-    website: {
-      type: String,
-      default: null,
-    },
-
-    city: {
-      type: String,
-      default: null,
-      index: true,
-    },
-
-    state: {
-      type: String,
-      default: null,
-      index: true,
-    },
-
-    zip: {
-      type: String,
-      default: null,
-    },
-
-    // ---------------- Capacity ----------------
-    bedCount: {
-      type: Number,
-      default: null,
-      min: 0,
-    },
-
-    icuBedCount: {
-      type: Number,
-      default: null,
-      min: 0,
-    },
-
-    emergencyBedCount: {
-      type: Number,
-      default: null,
-      min: 0,
-    },
-
-    // ---------------- Status ----------------
-    isOpen: {
-      type: Boolean,
-      default: false,
-    },
-
-    hasEmergency: {
-      type: Boolean,
-      default: false,
-    },
-
-    is24x7: {
-      type: Boolean,
-      default: false,
-    },
-
-    type: {
-      type: String,
-      default: null,
-    },
-
-    // ---------------- Reviews ----------------
-    rating: {
-      type: Number,
-      min: 0,
-      max: 5,
-      default: null,
-    },
-
-    totalReviews: {
-      type: Number,
-      default: 0,
-    },
-
-    accreditations: [
-      {
-        type: String,
-      },
-    ],
-
-    hospitalImages: [
-      {
-        type: String,
-      },
-    ],
-
-    ambulanceService: {
-      type: Boolean,
-    },
-
-    // ---------------- Search Helpers ----------------
-    distance: {
-      type: Number,
-      default: null,
-    },
+  coverPhoto: {
+    type: String,
+    default: null,
   },
+
+  // ---------------- Contact & Location ----------------
+  emergencyPhoneNumber: {
+    type: String,
+    default: null,
+  },
+
+  website: {
+    type: String,
+    default: null,
+  },
+
+  city: {
+    type: String,
+    default: null,
+    index: true,
+  },
+
+  state: {
+    type: String,
+    default: null,
+    index: true,
+  },
+
+  zip: {
+    type: String,
+    default: null,
+  },
+
+  // ---------------- Capacity ----------------
+  bedCount: {
+    type: Number,
+    default: null,
+    min: 0,
+  },
+
+  icuBedCount: {
+    type: Number,
+    default: null,
+    min: 0,
+  },
+
+  emergencyBedCount: {
+    type: Number,
+    default: null,
+    min: 0,
+  },
+
+  // ---------------- Status ----------------
+  isOpen: {
+    type: Boolean,
+    default: false,
+  },
+
+  hasEmergency: {
+    type: Boolean,
+    default: false,
+  },
+
+  is24x7: {
+    type: Boolean,
+    default: false,
+  },
+
+  type: {
+    type: String,
+    default: null,
+  },
+
+  // ---------------- Reviews ----------------
+  rating: {
+    type: Number,
+    min: 0,
+    max: 5,
+    default: null,
+  },
+
+  totalReviews: {
+    type: Number,
+    default: 0,
+  },
+
+  accreditations: [
+    {
+      type: String,
+    },
+  ],
+
+  hospitalImages: [
+    {
+      url: {
+        type: String,
+        required: true,
+      },
+      publicId: {
+        type: String,
+        required: true,
+      },
+    },
+  ],
+
+  ambulanceService: {
+    type: Boolean,
+  },
+
+  // ---------------- Search Helpers ----------------
+  distance: {
+    type: Number,
+    default: null,
+  },
+},
 );
 
 // ---------------- Hooks ----------------

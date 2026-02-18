@@ -1,9 +1,9 @@
 const cloudinary = require('../config/cloudinary');
-const { UserFactory } = require('../models/user/user_factory');
 
-const uploadProfilePicture = async (req, res) => {
+const uploadImage = async (req, res) => {
   try {
-    const user = req.user; // already fetched by auth middleware
+    const user = req.user;
+    const uploadPath = req.path;
 
     if (!user) {
       return res.status(401).json({
@@ -12,66 +12,151 @@ const uploadProfilePicture = async (req, res) => {
       });
     }
 
-    if (!req.file || !req.file.buffer) {
+    // Determine upload type
+    let type;
+    if (uploadPath.includes('profile-picture')) type = 'profile';
+    if (uploadPath.includes('cover-photo')) type = 'cover';
+    if (uploadPath.includes('hospital-images')) type = 'hospital';
+
+    const folderMap = {
+      profile: 'med_connect/profile_pictures',
+      cover: 'med_connect/cover_photos',
+      hospital: 'med_connect/hospital_images',
+    };
+
+    const selectedFolder = folderMap[type];
+
+    if (!selectedFolder) {
+      return res.status(400).json({
+        success: false,
+        message: 'Invalid upload type',
+      });
+    }
+
+    // MULTIPLE FILES (Hospital Images)
+    if (type === 'hospital') {
+      if (!req.files || req.files.length === 0) {
+        return res.status(400).json({
+          success: false,
+          message: 'No images provided',
+        });
+      }
+
+      const uploadedImages = [];
+
+      for (const file of req.files) {
+        const result = await cloudinary.uploader.upload_stream(
+          {
+            folder: selectedFolder,
+            resource_type: 'image',
+            transformation: [
+              { width: 1200, crop: 'limit' },
+              { quality: 'auto' },
+              { fetch_format: 'auto' },
+            ],
+          },
+          () => {}
+        );
+
+        // ⚠ upload_stream doesn't work with await directly
+        // So we use promise wrapper below instead
+      }
+
+      // Instead use Promise version below 👇
+      const uploadPromises = req.files.map((file) => {
+        return new Promise((resolve, reject) => {
+          const stream = cloudinary.uploader.upload_stream(
+            {
+              folder: selectedFolder,
+              resource_type: 'image',
+              transformation: [
+                { width: 1200, crop: 'limit' },
+                { quality: 'auto' },
+                { fetch_format: 'auto' },
+              ],
+            },
+            (error, result) => {
+              if (error) reject(error);
+              else resolve(result);
+            }
+          );
+
+          stream.end(file.buffer);
+        });
+      });
+
+      const results = await Promise.all(uploadPromises);
+
+      if (!user.hospitalImages) user.hospitalImages = [];
+
+      results.forEach((img) => {
+        user.hospitalImages.push({
+          url: img.secure_url,
+          publicId: img.public_id,
+        });
+      });
+
+      await user.save();
+
+      return res.status(200).json({
+        success: true,
+        images: results.map((r) => r.secure_url),
+      });
+    }
+
+    // SINGLE FILE (Profile / Cover)
+    if (!req.file) {
       return res.status(400).json({
         success: false,
         message: 'No image provided',
       });
     }
 
-    const uploadStream = cloudinary.uploader.upload_stream(
-      {
-        folder: 'med_connect/profile_pictures',
-        resource_type: 'image',
-        transformation: [
-          { width: 400, height: 400, crop: 'fill' },
-          { quality: 'auto' },
-          { fetch_format: 'auto' },
-        ],
-      },
-      async (error, uploadResult) => {
-        if (error) {
-          console.error('Cloudinary error:', error);
-          return res.status(500).json({
-            success: false,
-            message: 'Image upload failed',
-          });
+    const uploadResult = await new Promise((resolve, reject) => {
+      const stream = cloudinary.uploader.upload_stream(
+        {
+          folder: selectedFolder,
+          resource_type: 'image',
+          transformation: [
+            { width: 800, crop: 'limit' },
+            { quality: 'auto' },
+            { fetch_format: 'auto' },
+          ],
+        },
+        (error, result) => {
+          if (error) reject(error);
+          else resolve(result);
         }
+      );
 
-        try {
-          // 🔥 delete old image if exists
-          if (user.profilePicturePublicId) {
-            await cloudinary.uploader.destroy(
-              user.profilePicturePublicId
-            );
-          }
+      stream.end(req.file.buffer);
+    });
 
-          // save new image
-          user.profilePicture = uploadResult.secure_url;
-          user.profilePicturePublicId = uploadResult.public_id;
-
-          await user.save();
-
-          return res.status(200).json({
-            success: true,
-            imageUrl: uploadResult.secure_url,
-            user: UserFactory.getUserData(user),
-          });
-        } catch (dbError) {
-          console.error('DB save error:', dbError);
-          return res.status(500).json({
-            success: false,
-            message: 'Failed to save image',
-          });
-        }
+    if (type === 'profile') {
+      if (user.profilePicturePublicId) {
+        await cloudinary.uploader.destroy(user.profilePicturePublicId);
       }
-    );
+      user.profilePicture = uploadResult.secure_url;
+      user.profilePicturePublicId = uploadResult.public_id;
+    }
 
-    // send buffer to Cloudinary
-    uploadStream.end(req.file.buffer);
+    if (type === 'cover') {
+      if (user.coverPhotoPublicId) {
+        await cloudinary.uploader.destroy(user.coverPhotoPublicId);
+      }
+      user.coverPhoto = uploadResult.secure_url;
+      user.coverPhotoPublicId = uploadResult.public_id;
+    }
+
+    await user.save();
+
+    return res.status(200).json({
+      success: true,
+      imageUrl: uploadResult.secure_url,
+    });
 
   } catch (error) {
-    console.error('Profile upload error:', error);
+    console.error('Upload error:', error);
     return res.status(500).json({
       success: false,
       message: 'Server error while uploading image',
@@ -79,4 +164,4 @@ const uploadProfilePicture = async (req, res) => {
   }
 };
 
-module.exports = { uploadProfilePicture };
+module.exports = { uploadImage };

@@ -13,7 +13,6 @@ const createAppointment = async (req, res) => {
     });
 
     await appointment.save();
-    console.log("✅ Appointment saved:", appointment._id);
 
     const [patient, doctor, hospital] = await Promise.all([
       Patient.findById(req.user.id),
@@ -21,11 +20,6 @@ const createAppointment = async (req, res) => {
       Hospital.findById(appointment.hospitalId),
     ]);
 
-    console.log("📌 Patient:", patient?._id, "Token:", patient?.fcmToken);
-    console.log("📌 Doctor:", doctor?._id, "Token:", doctor?.fcmToken);
-    console.log("📌 Hospital:", hospital?._id, "Token:", hospital?.fcmToken);
-
-    // Build notification promises safely
     const notifications = [];
 
     if (patient?.fcmToken) {
@@ -34,7 +28,7 @@ const createAppointment = async (req, res) => {
         promise: sendNotification(
           patient.fcmToken,
           "Appointment Request Sent",
-          `Your appointment request for ${appointment.appointmentDate} at ${appointment.appointmentTime} was sent.`
+          `Your appointment request for ${appointment.formattedDate} at ${appointment.appointmentTime} was sent. The hospital will review and confirm your appointment shortly. Thank you for using our service! If you have any questions, please contact the hospital directly. We wish you good health!`
         ),
       });
     }
@@ -45,7 +39,7 @@ const createAppointment = async (req, res) => {
         promise: sendNotification(
           doctor.fcmToken,
           "New Appointment Request",
-          `New patient booked for ${appointment.appointmentDate} at ${appointment.appointmentTime}.`
+          `New patient booked for ${appointment.formattedDate} at ${appointment.appointmentTime}. `
         ),
       });
     }
@@ -56,7 +50,7 @@ const createAppointment = async (req, res) => {
         promise: sendNotification(
           hospital.fcmToken,
           "New Appointment Scheduled",
-          `Doctor has a new booking on ${appointment.appointmentDate}.`
+          `Doctor ${doctor?.name || "Unknown"} has a new booking on ${appointment.formattedDate} at ${appointment.appointmentTime}. Patient: ${patient?.name || "Unknown"}. Please review and confirm the appointment. Thank you!`
         ),
       });
     }
@@ -67,12 +61,6 @@ const createAppointment = async (req, res) => {
 
     notificationResults.forEach((result, index) => {
       const role = notifications[index].role;
-
-      if (result.status === "fulfilled") {
-        console.log(`✅ ${role} notification sent successfully`);
-      } else {
-        console.error(`❌ ${role} notification failed:`, result.reason);
-      }
     });
 
     res.status(201).json({
@@ -276,12 +264,12 @@ const cancelAppointment = async (req, res) => {
       sendNotification(
         patient?.fcmToken,
         "Appointment Cancelled",
-        `Your appointment on ${appointment.appointmentDate} was cancelled.`
+        `Your appointment on ${appointment.formattedDate} was cancelled. Reason: ${reason || "No reason provided"}. If you have any questions, please contact the hospital.`
       ),
       sendNotification(
         doctor?.fcmToken,
         "Appointment Cancelled",
-        `An appointment on ${appointment.appointmentDate} was cancelled.`
+        `An appointment on ${appointment.formattedDate} was cancelled. Reason: ${reason || "No reason provided"}.`
       ),
     ]);
 
@@ -326,7 +314,7 @@ const rescheduleAppointment = async (req, res) => {
     await sendNotification(
       patient?.fcmToken,
       "Appointment Rescheduled",
-      `Your appointment has been moved to ${appointment.appointmentDate} at ${appointment.appointmentTime}.`
+      `Your appointment has been moved to ${appointment.formattedDate} at ${appointment.appointmentTime}. Thank you for your understanding. If you have any questions, please contact the hospital.`
     );
 
 
@@ -387,7 +375,7 @@ const confirmAppointmentByHospital = async (req, res) => {
     await sendNotification(
       patient?.fcmToken,
       "Appointment Confirmed",
-      `Your appointment for ${appointment.appointmentDate} at ${appointment.appointmentTime} has been confirmed by the hospital.`
+      `Your appointment for ${appointment.formattedDate} at ${appointment.appointmentTime} has been confirmed by the hospital. Please arrive 10-15 minutes early and bring any necessary documents. If you have any questions, feel free to contact the hospital. Thank you for choosing our service!`
     );
 
     res.status(200).json({
@@ -423,7 +411,7 @@ const completeAppointment = async (req, res) => {
     await sendNotification(
       patient?.fcmToken,
       "Appointment Completed",
-      "Your appointment has been marked as completed."
+      "Your appointment has been marked as completed. Thank you for using our service! We hope to see you again soon. Please consider leaving a review or providing feedback to help us improve. Have a great day!"
     );
 
     res.json({ success: true, data: appointment });

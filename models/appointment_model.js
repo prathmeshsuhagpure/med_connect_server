@@ -114,5 +114,12 @@ const appointmentSchema = new mongoose.Schema(
   }
 );
 
+appointmentSchema.virtual("formattedDate").get(function () {
+  return this.appointmentDate
+    ? this.appointmentDate.toLocaleDateString("en-GB")
+    : null;
+});
+
+
 const Appointment = mongoose.model("Appointment", appointmentSchema);
 module.exports = Appointment;

@@ -25,7 +25,7 @@ const createBaseUserSchema = () => {
       role: {
         type: String,
         required: true,
-        immutable: true, 
+        immutable: true,
       },
       phoneNumber: {
         type: String,
@@ -42,6 +42,10 @@ const createBaseUserSchema = () => {
       isVerified: {
         type: Boolean,
         default: false,
+      },
+      fcmToken: {
+        type: String,
+        default: "",
       },
     },
     {

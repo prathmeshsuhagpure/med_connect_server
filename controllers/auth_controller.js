@@ -283,4 +283,40 @@ const logout = async (req, res) => {
   }
 };
 
-module.exports = { login, signup, verifyToken, logout };
+const saveFcmToken = async (req, res) => {
+  try {
+    const { fcmToken } = req.body;
+
+    if (!fcmToken) {
+      return res.status(400).json({
+        success: false,
+        message: "FCM token is required",
+      });
+    }
+
+    const user = await User.findById(req.user._id);
+
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+      });
+    }
+
+    user.fcmToken = fcmToken;
+    await user.save();
+
+    res.status(200).json({
+      success: true,
+      message: "FCM token saved successfully",
+    });
+  } catch (error) {
+    console.error("Error saving FCM token:", error);
+    res.status(500).json({
+      success: false,
+      message: "Server error occurred while saving FCM token",
+    });
+  }
+};
+
+module.exports = { login, signup, verifyToken, logout, saveFcmToken };

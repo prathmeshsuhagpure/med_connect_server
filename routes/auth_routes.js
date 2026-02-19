@@ -11,4 +11,6 @@ router.post('/verify-token', verifyToken);
 
 router.post('/logout', protect, logout);
 
+router.post('/save-fcm-token', protect, saveFcmToken);
+
 module.exports = router;

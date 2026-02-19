@@ -11,7 +11,9 @@ const createAppointment = async (req, res) => {
       ...req.body,
       patientId: req.user.id,
     });
+
     await appointment.save();
+    console.log("✅ Appointment saved:", appointment._id);
 
     const [patient, doctor, hospital] = await Promise.all([
       Patient.findById(req.user.id),
@@ -23,29 +25,53 @@ const createAppointment = async (req, res) => {
     console.log("📌 Doctor:", doctor?._id, "Token:", doctor?.fcmToken);
     console.log("📌 Hospital:", hospital?._id, "Token:", hospital?.fcmToken);
 
-    await Promise.all([
-      sendNotification(
-        patient?.fcmToken,
-        "Appointment Request Sent",
-        `Your appointment request for ${appointment.appointmentDate} at ${appointment.appointmentTime} was sent.`
-      ),
-      sendNotification(
-        doctor?.fcmToken,
-        "New Appointment Request",
-        `New patient booked for ${appointment.appointmentDate} at ${appointment.appointmentTime}.`
-      ),
-      sendNotification(
-        hospital?.fcmToken,
-        "New Appointment Scheduled",
-        `Doctor has a new booking on ${appointment.appointmentDate}.`
-      ),
-    ]);
+    // Build notification promises safely
+    const notifications = [];
+
+    if (patient?.fcmToken) {
+      notifications.push({
+        role: "Patient",
+        promise: sendNotification(
+          patient.fcmToken,
+          "Appointment Request Sent",
+          `Your appointment request for ${appointment.appointmentDate} at ${appointment.appointmentTime} was sent.`
+        ),
+      });
+    }
+
+    if (doctor?.fcmToken) {
+      notifications.push({
+        role: "Doctor",
+        promise: sendNotification(
+          doctor.fcmToken,
+          "New Appointment Request",
+          `New patient booked for ${appointment.appointmentDate} at ${appointment.appointmentTime}.`
+        ),
+      });
+    }
+
+    if (hospital?.fcmToken) {
+      notifications.push({
+        role: "Hospital",
+        promise: sendNotification(
+          hospital.fcmToken,
+          "New Appointment Scheduled",
+          `Doctor has a new booking on ${appointment.appointmentDate}.`
+        ),
+      });
+    }
+
+    const notificationResults = await Promise.allSettled(
+      notifications.map(n => n.promise)
+    );
 
     notificationResults.forEach((result, index) => {
+      const role = notifications[index].role;
+
       if (result.status === "fulfilled") {
-        console.log(`✅ Notification ${index + 1} sent successfully`, result.value);
+        console.log(`✅ ${role} notification sent successfully`);
       } else {
-        console.error(`❌ Notification ${index + 1} failed:`, result.reason);
+        console.error(`❌ ${role} notification failed:`, result.reason);
       }
     });
 
@@ -54,15 +80,15 @@ const createAppointment = async (req, res) => {
       message: "Appointment created successfully",
       data: appointment,
     });
+
   } catch (error) {
-    console.error("Create appointment error:", error);
+    console.error("❌ Create appointment error:", error);
     res.status(400).json({
       success: false,
       message: error.message,
     });
   }
 };
-
 
 const getAllAppointments = async (req, res) => {
   try {

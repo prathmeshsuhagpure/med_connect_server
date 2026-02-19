@@ -286,6 +286,7 @@ const logout = async (req, res) => {
 const saveFcmToken = async (req, res) => {
   try {
     const { fcmToken } = req.body;
+    console.log("Saving FCM token for user:", req.user._id, "Token:", fcmToken);
 
     if (!fcmToken) {
       return res.status(400).json({

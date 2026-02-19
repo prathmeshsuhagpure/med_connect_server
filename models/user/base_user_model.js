@@ -84,6 +84,7 @@ const createBaseUserSchema = () => {
       isActive: this.isActive,
       createdAt: this.createdAt,
       updatedAt: this.updatedAt,
+      fcmToken: this.fcmToken,
     };
   };
 

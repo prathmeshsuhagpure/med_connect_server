@@ -1,4 +1,9 @@
 const Appointment = require("../models/appointment_model");
+const Patient = require("../models/user/patient_model");
+const Doctor = require("../models/user/doctor_model");
+const Hospital = require("../models/user/hospital_model");
+const { sendNotification } = require("../services/notification_service");
+
 
 const createAppointment = async (req, res) => {
   try {
@@ -7,6 +12,30 @@ const createAppointment = async (req, res) => {
       patientId: req.user.id,
     });
     await appointment.save();
+
+    const [patient, doctor, hospital] = await Promise.all([
+      Patient.findById(req.user.id),
+      Doctor.findById(appointment.doctorId),
+      Hospital.findById(appointment.hospitalId),
+    ]);
+
+    await Promise.all([
+      sendNotification(
+        patient?.fcmToken,
+        "Appointment Request Sent",
+        `Your appointment request for ${appointment.appointmentDate} at ${appointment.appointmentTime} was sent.`
+      ),
+      sendNotification(
+        doctor?.fcmToken,
+        "New Appointment Request",
+        `New patient booked for ${appointment.appointmentDate} at ${appointment.appointmentTime}.`
+      ),
+      sendNotification(
+        hospital?.fcmToken,
+        "New Appointment Scheduled",
+        `Doctor has a new booking on ${appointment.appointmentDate}.`
+      ),
+    ]);
 
     res.status(201).json({
       success: true,
@@ -168,7 +197,6 @@ const getAppointmentsByDoctor = async (req, res) => {
   }
 };
 
-// ✅ Updated cancelAppointment to handle cancelledBy
 const cancelAppointment = async (req, res) => {
   try {
     const { reason, cancelledBy } = req.body;
@@ -200,6 +228,24 @@ const cancelAppointment = async (req, res) => {
         message: "Appointment not found",
       });
     }
+
+    const [patient, doctor] = await Promise.all([
+      Patient.findById(appointment.patientId),
+      Doctor.findById(appointment.doctorId),
+    ]);
+
+    await Promise.all([
+      sendNotification(
+        patient?.fcmToken,
+        "Appointment Cancelled",
+        `Your appointment on ${appointment.appointmentDate} was cancelled.`
+      ),
+      sendNotification(
+        doctor?.fcmToken,
+        "Appointment Cancelled",
+        `An appointment on ${appointment.appointmentDate} was cancelled.`
+      ),
+    ]);
 
     res.status(200).json({
       success: true,
@@ -236,6 +282,15 @@ const rescheduleAppointment = async (req, res) => {
         message: "Appointment not found",
       });
     }
+
+    const patient = await Patient.findById(appointment.patientId);
+
+    await sendNotification(
+      patient?.fcmToken,
+      "Appointment Rescheduled",
+      `Your appointment has been moved to ${appointment.appointmentDate} at ${appointment.appointmentTime}.`
+    );
+
 
     res.status(200).json({
       success: true,
@@ -289,6 +344,14 @@ const confirmAppointmentByHospital = async (req, res) => {
         message: "Appointment not found",
       });
     }
+    const patient = await Patient.findById(appointment.patientId);
+
+    await sendNotification(
+      patient?.fcmToken,
+      "Appointment Confirmed",
+      `Your appointment for ${appointment.appointmentDate} at ${appointment.appointmentTime} has been confirmed by the hospital.`
+    );
+
     res.status(200).json({
       success: true,
       message: "Appointment confirmed successfully by hospital",
@@ -304,6 +367,35 @@ const confirmAppointmentByHospital = async (req, res) => {
   }
 };
 
+const completeAppointment = async (req, res) => {
+  try {
+    const appointment = await Appointment.findById(req.params.id);
+
+    if (!appointment) {
+      return res.status(404).json({ message: "Not found" });
+    }
+
+    appointment.status = "completed";
+    appointment.completedAt = new Date();
+
+    await appointment.save();
+
+    const patient = await Patient.findById(appointment.patientId);
+
+    await sendNotification(
+      patient?.fcmToken,
+      "Appointment Completed",
+      "Your appointment has been marked as completed."
+    );
+
+    res.json({ success: true, data: appointment });
+
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+
 module.exports = {
   createAppointment,
   getAllAppointments,
@@ -315,4 +407,5 @@ module.exports = {
   getAppointmentsByDoctor,
   getAppointmentsByHospital,
   confirmAppointmentByHospital,
+  completeAppointment,
 };

@@ -26,5 +26,6 @@ router.get('/getAppointment/doctor/:doctorId', protect, controller.getAppointmen
 router.put("/:id/cancel", controller.cancelAppointment);
 router.put("/:id/reschedule", controller.rescheduleAppointment);
 router.put("/:id/confirm", controller.confirmAppointmentByHospital);
+router.put("/:id/complete", controller.completeAppointment);
 
 module.exports = router;

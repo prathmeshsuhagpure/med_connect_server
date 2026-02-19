@@ -107,6 +107,7 @@ const appointmentSchema = new mongoose.Schema(
     patientSymptoms: {
       type: String,
     },
+    completedAt: Date,
   },
   {
     timestamps: true,

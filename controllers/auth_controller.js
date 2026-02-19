@@ -286,7 +286,6 @@ const logout = async (req, res) => {
 const saveFcmToken = async (req, res) => {
   try {
     const { fcmToken } = req.body;
-    console.log("Saving FCM token for user:", req.user._id, "Token:", fcmToken);
 
     if (!fcmToken) {
       return res.status(400).json({
@@ -295,29 +294,34 @@ const saveFcmToken = async (req, res) => {
       });
     }
 
-    const user = await User.findById(req.user._id);
+    console.log(
+      "Saving FCM token for:",
+      req.userId,
+      "Role:",
+      req.userRole
+    );
 
-    if (!user) {
-      return res.status(404).json({
-        success: false,
-        message: "User not found",
-      });
-    }
+    // req.user already contains correct model instance
+    req.user.fcmToken = fcmToken;
 
-    user.fcmToken = fcmToken;
-    await user.save();
+    await req.user.save();
 
-    res.status(200).json({
+    console.log("✅ FCM token saved successfully");
+
+    return res.status(200).json({
       success: true,
       message: "FCM token saved successfully",
     });
+
   } catch (error) {
-    console.error("Error saving FCM token:", error);
-    res.status(500).json({
+    console.error("❌ Error saving FCM token:", error);
+
+    return res.status(500).json({
       success: false,
       message: "Server error occurred while saving FCM token",
     });
   }
 };
+
 
 module.exports = { login, signup, verifyToken, logout, saveFcmToken };

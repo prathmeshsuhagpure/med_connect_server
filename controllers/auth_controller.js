@@ -294,19 +294,9 @@ const saveFcmToken = async (req, res) => {
       });
     }
 
-    console.log(
-      "Saving FCM token for:",
-      req.userId,
-      "Role:",
-      req.userRole
-    );
-
-    // req.user already contains correct model instance
     req.user.fcmToken = fcmToken;
 
     await req.user.save();
-
-    console.log("✅ FCM token saved successfully");
 
     return res.status(200).json({
       success: true,
@@ -314,11 +304,9 @@ const saveFcmToken = async (req, res) => {
     });
 
   } catch (error) {
-    console.error("❌ Error saving FCM token:", error);
-
     return res.status(500).json({
       success: false,
-      message: "Server error occurred while saving FCM token",
+      message: "Server error occurred while saving FCM token" + error.message,
     });
   }
 };

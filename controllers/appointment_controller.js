@@ -19,6 +19,10 @@ const createAppointment = async (req, res) => {
       Hospital.findById(appointment.hospitalId),
     ]);
 
+    console.log("📌 Patient:", patient?._id, "Token:", patient?.fcmToken);
+    console.log("📌 Doctor:", doctor?._id, "Token:", doctor?.fcmToken);
+    console.log("📌 Hospital:", hospital?._id, "Token:", hospital?.fcmToken);
+
     await Promise.all([
       sendNotification(
         patient?.fcmToken,
@@ -36,6 +40,14 @@ const createAppointment = async (req, res) => {
         `Doctor has a new booking on ${appointment.appointmentDate}.`
       ),
     ]);
+
+    notificationResults.forEach((result, index) => {
+      if (result.status === "fulfilled") {
+        console.log(`✅ Notification ${index + 1} sent successfully`, result.value);
+      } else {
+        console.error(`❌ Notification ${index + 1} failed:`, result.reason);
+      }
+    });
 
     res.status(201).json({
       success: true,

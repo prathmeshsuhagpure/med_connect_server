@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 
-const { login, signup, verifyToken, logout } = require("../controllers/auth_controller");
+const { login, signup, verifyToken, logout, saveFcmToken } = require("../controllers/auth_controller");
 const {protect} =require("../middlewares/auth_middleware");
 
 // Auth Routes

@@ -14,6 +14,12 @@ const sendNotification = async (token, title, body, type = "appointment", extraD
         title,
         body,
         type,
+        ...Object.fromEntries(
+          Object.entries(extraData).map(([key, value]) => [
+            key,
+            String(value),
+          ])
+        ),
       },
       android: {
         priority: "high",

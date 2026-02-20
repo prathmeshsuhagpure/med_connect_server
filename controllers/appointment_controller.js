@@ -28,7 +28,11 @@ const createAppointment = async (req, res) => {
         promise: sendNotification(
           patient.fcmToken,
           "Appointment Request Sent",
-          `Your appointment request for ${appointment.formattedDate} at ${appointment.appointmentTime} was sent. The hospital will review and confirm your appointment shortly. Thank you for using our service! If you have any questions, please contact the hospital directly. We wish you good health!`
+          `Your appointment request for ${appointment.formattedDate} at ${appointment.appointmentTime} was sent. The hospital will review and confirm your appointment shortly. Thank you for using our service! If you have any questions, please contact the hospital directly. We wish you good health!`,
+          "appointment",
+          {
+            appointmentId: appointment._id.toString(),
+          }
         ),
       });
     }
@@ -39,7 +43,11 @@ const createAppointment = async (req, res) => {
         promise: sendNotification(
           doctor.fcmToken,
           "New Appointment Request",
-          `New patient booked for ${appointment.formattedDate} at ${appointment.appointmentTime}. `
+          `New appointment request for ${appointment.formattedDate} at ${appointment.appointmentTime}. Please review and confirm the appointment. Thank you!`,
+          "appointment",
+          {
+            appointmentId: appointment._id.toString(),
+          }
         ),
       });
     }
@@ -49,8 +57,12 @@ const createAppointment = async (req, res) => {
         role: "Hospital",
         promise: sendNotification(
           hospital.fcmToken,
-          "New Appointment Scheduled",
-          `Doctor ${doctor?.name || "Unknown"} has a new booking on ${appointment.formattedDate} at ${appointment.appointmentTime}. Patient: ${patient?.name || "Unknown"}. Please review and confirm the appointment. Thank you!`
+          "New Appointment Request Received",
+          `Doctor ${doctor?.name || "Unknown"} has a new booking on ${appointment.formattedDate} at ${appointment.appointmentTime}. Patient: ${patient?.name || "Unknown"}. Please review and confirm the appointment. Thank you!`,
+          "appointment",
+          {
+            appointmentId: appointment._id.toString(),
+          }
         ),
       });
     }

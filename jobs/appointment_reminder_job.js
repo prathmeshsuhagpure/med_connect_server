@@ -29,7 +29,6 @@ cron.schedule("*/5 * * * *", async () => {
                 "appointment_reminder"
             );
 
-            // Mark reminder as sent
             appointment.reminderSent = true;
             await appointment.save();
         }

@@ -88,7 +88,7 @@ const appointmentSchema = new mongoose.Schema(
       min: 0,
     },
 
-    patientName:{
+    patientName: {
       type: String,
       required: true,
       trim: true,
@@ -106,6 +106,10 @@ const appointmentSchema = new mongoose.Schema(
 
     patientSymptoms: {
       type: String,
+    },
+    reminderSent: {
+      type: Boolean,
+      default: false,
     },
     completedAt: Date,
   },

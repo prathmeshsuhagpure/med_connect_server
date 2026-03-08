@@ -45,6 +45,10 @@ patientSchema.add({
       default: '',
     },
   },
+  profilePicture: {
+    type: String,
+    default: "",
+  },
   medicalInfo: {
     allergies: {
       type: String,
@@ -57,10 +61,6 @@ patientSchema.add({
     conditions: {
       type: String,
       default: '',
-    },
-    profilePicture: {
-      type: String,
-      default: "",
     },
   },
 });
